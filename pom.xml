@@ -39,10 +39,6 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.groovy</groupId>
-			<artifactId>groovy</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter</artifactId>
 			<version>3.0.3</version>
@@ -135,25 +131,6 @@
 						</exclude>
 					</excludes>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.gmavenplus</groupId>
-				<artifactId>gmavenplus-plugin</artifactId>
-				<version>1.13.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>addSources</goal>
-							<goal>addTestSources</goal>
-							<goal>generateStubs</goal>
-							<goal>compile</goal>
-							<goal>generateTestStubs</goal>
-							<goal>compileTests</goal>
-							<goal>removeStubs</goal>
-							<goal>removeTestStubs</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
