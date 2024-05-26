@@ -7,6 +7,7 @@ spring:
     add-properties: true
   application:
     name: falsework
+    version: 0.0.1
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://39.103.181.81:3306/tj_falsework
@@ -15,8 +16,9 @@ spring:
 
 logging:
   level:
-    root: DEBUG
-    org.springframework.web: DEBUG
+    root: INFO
+    org.springframework.web: INFO
+    com.wamogu: TRACE
   path: ./logs
   pattern:
     console: "${CONSOLE_LOG_PATTERN:%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan}[row:%line] %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}}"
@@ -52,5 +54,8 @@ knife4j:
 graceful-response:
   # exclude-packages:
   # exclude-return-types:
+  exclude-packages:
+    - springfox.**
+    - org.springframework.boot.actuate.*
   exclude-urls:
     - /**/v3/api-docs/*
