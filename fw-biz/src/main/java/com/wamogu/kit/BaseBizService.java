@@ -1,0 +1,96 @@
+package com.wamogu.kit;
+
+import cn.hutool.core.util.ReflectUtil;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.wamogu.exception.ErrorKit;
+import com.wamogu.querykit.FwQueryBase;
+import com.wamogu.querykit.FwQueryKit;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * @Author Armin
+ * @datDO 24-05-29 14:52
+ */
+public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
+    protected abstract <R extends IService<DO>> R getBaseService();
+    protected abstract <C extends BaseCastor<DO, DTO, VO>> C getBaseCastor();
+
+
+    private Class<DO> clazzDO;
+    private Class<DTO> clazzDTO;
+    private Class<VO> clazzVO;
+
+    public BaseBizService() {
+        ParameterizedType pt = (ParameterizedType) this.getClass().getGenericSuperclass();
+        this.clazzDO = (Class<DO>) pt.getActualTypeArguments()[0];
+        this.clazzDTO = (Class<DTO>) pt.getActualTypeArguments()[1];
+        this.clazzVO = (Class<VO>) pt.getActualTypeArguments()[2];
+    }
+
+    public VO getOne(PK id) {
+        DO itemDo = getBaseService().getById(id);
+        if (itemDo == null) {
+            throw new ErrorKit.IllegalParam("找不到对象");
+        }
+        return getBaseCastor().do2vo(itemDo);
+    }
+
+    public VO updateOne(PK id, DTO itemDto) {
+        DO itemDo = getBaseCastor().dto2do(itemDto);
+        if (itemDo == null) {
+            throw new ErrorKit.IllegalParam("找不到对象");
+        }
+        setPriKeyValue(itemDo, id);
+        getBaseService().updateById(itemDo);
+        return getBaseCastor().do2vo(itemDo);
+    }
+
+    public void deleteOne(PK id) {
+        if (!getBaseService().removeById(id)) {
+            throw new ErrorKit.IllegalParam("找不到对象");
+        }
+    }
+
+    private void setPriKeyValue(DO itemDo, PK id) {
+        Optional<Field> pkField = Arrays.stream(ReflectUtil.getFields(itemDo.getClass()))
+                .filter(x -> x.getAnnotation(TableId.class) != null)
+                .findFirst();
+        if (pkField.isEmpty()) {
+            throw new ErrorKit.Fatal(String.format("系统异常：类 %s 未定义 @TableId", itemDo.getClass().getSimpleName()) );
+        }
+        ReflectUtil.setFieldValue(itemDo, pkField.get(), id);;
+    }
+
+    public List<VO> getAll(FwQueryBase baseQuery) {
+        LambdaQueryChainWrapper<DO> qw = baseQuery != null
+                ? FwQueryKit.buildSearch(getBaseService(), baseQuery)
+                : getBaseService().lambdaQuery() ;
+        return getBaseCastor().dos2vos(qw.list());
+    }
+    public List<VO> getAll() {
+        return getAll(null);
+    }
+
+    public IPage<VO> getPage(FwQueryBase baseQuery) {
+        Page<DO> pageDo = baseQuery != null
+                ? FwQueryKit.page(getBaseService(), baseQuery)
+                : getBaseService().lambdaQuery().page(FwQueryBase.getDefaultPage(clazzDO));
+        return getBaseCastor().pageDo2vo(pageDo);
+    }
+
+    public VO createOne(DTO itemDto) {
+        DO itemDo = getBaseCastor().dto2do(itemDto);
+        getBaseService().save(itemDo);
+        return getBaseCastor().do2vo(itemDo);
+    }
+}
