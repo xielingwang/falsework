@@ -31,7 +31,7 @@ logging:
     name: logs/spring-log.log
   logback:
     rollingpolicy:
-      max-history: 15
+      max-history: 3
       max-file-size: 1MB
 
 # mybatis-plus

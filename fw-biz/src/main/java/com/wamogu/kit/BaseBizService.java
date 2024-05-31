@@ -46,13 +46,19 @@ public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
     }
 
     public VO updateOne(PK id, DTO itemDto) {
-        DO itemDo = getBaseCastor().dto2do(itemDto);
-        if (itemDo == null) {
+        DO itemDoExisted = getBaseService().getById(id);
+        if (itemDoExisted == null) {
             throw new ErrorKit.IllegalParam("找不到对象");
         }
+        DO itemDo = getBaseCastor().dto2do(itemDto);
         setPriKeyValue(itemDo, id);
         getBaseService().updateById(itemDo);
         return getBaseCastor().do2vo(itemDo);
+    }
+    public List<VO> updateList(List<DTO> itemDtos) {
+        List<DO> itemDos = itemDtos.stream().map(x -> getBaseCastor().dto2do(x)).toList();
+        getBaseService().updateBatchById(itemDos);
+        return getBaseCastor().dos2vos(itemDos);
     }
 
     public void deleteOne(PK id) {
@@ -69,6 +75,16 @@ public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
             throw new ErrorKit.Fatal(String.format("系统异常：类 %s 未定义 @TableId", itemDo.getClass().getSimpleName()) );
         }
         ReflectUtil.setFieldValue(itemDo, pkField.get(), id);;
+    }
+
+    private void getPriKeyValue(DO itemDo) {
+        Optional<Field> pkField = Arrays.stream(ReflectUtil.getFields(itemDo.getClass()))
+                .filter(x -> x.getAnnotation(TableId.class) != null)
+                .findFirst();
+        if (pkField.isEmpty()) {
+            throw new ErrorKit.Fatal(String.format("系统异常：类 %s 未定义 @TableId", itemDo.getClass().getSimpleName()) );
+        }
+        ReflectUtil.getFieldValue(itemDo, pkField.get());
     }
 
     public List<VO> getAll(FwQueryBase baseQuery) {
@@ -92,5 +108,9 @@ public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
         DO itemDo = getBaseCastor().dto2do(itemDto);
         getBaseService().save(itemDo);
         return getBaseCastor().do2vo(itemDo);
+    }
+
+    public void deleteBatchByIds(List<PK> ids) {
+        getBaseService().removeByIds(ids);
     }
 }
