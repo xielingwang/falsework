@@ -22,7 +22,7 @@ import java.util.Optional;
  * @datDO 24-05-29 14:52
  */
 public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
-    protected abstract <R extends IService<DO>> R getBaseService();
+    protected abstract <R extends IService<DO>> R getBaseRepository();
     protected abstract <C extends BaseCastor<DO, DTO, VO>> C getBaseCastor();
 
 
@@ -38,7 +38,7 @@ public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
     }
 
     public VO getOne(PK id) {
-        DO itemDo = getBaseService().getById(id);
+        DO itemDo = getBaseRepository().getById(id);
         if (itemDo == null) {
             throw new ErrorKit.IllegalParam("找不到对象");
         }
@@ -46,23 +46,23 @@ public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
     }
 
     public VO updateOne(PK id, DTO itemDto) {
-        DO itemDoExisted = getBaseService().getById(id);
+        DO itemDoExisted = getBaseRepository().getById(id);
         if (itemDoExisted == null) {
             throw new ErrorKit.IllegalParam("找不到对象");
         }
         DO itemDo = getBaseCastor().dto2do(itemDto);
         setPriKeyValue(itemDo, id);
-        getBaseService().updateById(itemDo);
+        getBaseRepository().updateById(itemDo);
         return getBaseCastor().do2vo(itemDo);
     }
     public List<VO> updateList(List<DTO> itemDtos) {
         List<DO> itemDos = itemDtos.stream().map(x -> getBaseCastor().dto2do(x)).toList();
-        getBaseService().updateBatchById(itemDos);
+        getBaseRepository().updateBatchById(itemDos);
         return getBaseCastor().dos2vos(itemDos);
     }
 
     public void deleteOne(PK id) {
-        if (!getBaseService().removeById(id)) {
+        if (!getBaseRepository().removeById(id)) {
             throw new ErrorKit.IllegalParam("找不到对象");
         }
     }
@@ -89,8 +89,8 @@ public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
 
     public List<VO> getAll(FwQueryBase baseQuery) {
         LambdaQueryChainWrapper<DO> qw = baseQuery != null
-                ? FwQueryKit.buildSearch(getBaseService(), baseQuery)
-                : getBaseService().lambdaQuery() ;
+                ? FwQueryKit.buildSearch(getBaseRepository(), baseQuery)
+                : getBaseRepository().lambdaQuery() ;
         return getBaseCastor().dos2vos(qw.list());
     }
     public List<VO> getAll() {
@@ -99,18 +99,18 @@ public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
 
     public IPage<VO> getPage(FwQueryBase baseQuery) {
         Page<DO> pageDo = baseQuery != null
-                ? FwQueryKit.page(getBaseService(), baseQuery)
-                : getBaseService().lambdaQuery().page(FwQueryBase.getDefaultPage(clazzDO));
+                ? FwQueryKit.page(getBaseRepository(), baseQuery)
+                : getBaseRepository().lambdaQuery().page(FwQueryBase.getDefaultPage(clazzDO));
         return getBaseCastor().pageDo2vo(pageDo);
     }
 
     public VO createOne(DTO itemDto) {
         DO itemDo = getBaseCastor().dto2do(itemDto);
-        getBaseService().save(itemDo);
+        getBaseRepository().save(itemDo);
         return getBaseCastor().do2vo(itemDo);
     }
 
     public void deleteBatchByIds(List<PK> ids) {
-        getBaseService().removeByIds(ids);
+        getBaseRepository().removeByIds(ids);
     }
 }

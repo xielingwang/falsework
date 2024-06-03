@@ -96,10 +96,14 @@
 - [ ] 短信 [SMS4J](https://github.com/dromara/SMS4J)
 - 
 
-## 部署规划
+## 开发部署
 
-### 部署
+### 开发
 
 - [x] maven 配置
 - [ ] gradle 配置
+- [ ] 引入 spoon，重复代码生成
 - [x] `dao`、`kit`、`biz` 模块化
+- [ ] 优先使用国内镜像仓库
+
+### 部署

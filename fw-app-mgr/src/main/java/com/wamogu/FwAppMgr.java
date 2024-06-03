@@ -16,30 +16,32 @@ import java.net.InetAddress;
 @EnableAutoTable
 @SpringBootApplication
 public class FwAppMgr {
+    private static final String PORT_NAME = "server.port";
 
-	private static final String PORT_NAME = "server.port";
+    @SneakyThrows
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(FwAppMgr.class);
+        ConfigurableApplicationContext context = app.run(args);
 
-	@SneakyThrows
-	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(FwAppMgr.class);
-		ConfigurableApplicationContext context = app.run(args);
+        Environment env = context.getEnvironment();
 
-		Environment env = context.getEnvironment();
-
-		log.info("\n----------------------------------------------------------\n\t" +
-						"Application '{}' is running! Access URLs:\n\t" +
-						"Local: \t\thttp://localhost:{}\n\t" +
-						"External: \thttp://{}:{}\n\t"+
-						"Doc: \thttp://{}:{}{}/doc.html\n"+
-						"----------------------------------------------------------",
-				env.getProperty("spring.application.name", "Falsework"),
-				env.getProperty(PORT_NAME, "8080"),
-				InetAddress.getLocalHost().getHostAddress(),
-				env.getProperty(PORT_NAME, "8080"),
-				InetAddress.getLocalHost().getHostAddress(),
-				env.getProperty(PORT_NAME, "8080"),
-				env.getProperty("server.servlet.context-path", "")
-				);
-	}
+        String textBlock = """
+---------------------------------------------------------
+Application '{}' is running! Access URLs:
+Local: \t\thttp://localhost:{}
+External: \thttp://{}:{}
+Doc: \thttp://{}:{}{}/doc.html
+----------------------------------------------------------
+""";
+        log.info(textBlock,
+                env.getProperty("spring.application.name", "Falsework"),
+                env.getProperty(PORT_NAME, "8080"),
+                InetAddress.getLocalHost().getHostAddress(),
+                env.getProperty(PORT_NAME, "8080"),
+                InetAddress.getLocalHost().getHostAddress(),
+                env.getProperty(PORT_NAME, "8080"),
+                env.getProperty("server.servlet.context-path", "")
+        );
+    }
 
 }

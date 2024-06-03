@@ -1,4 +1,4 @@
-server.servlet.context-path: /mgr/api
+server.servlet.context-path: ${APP_CONTEXT_PATH:/mgr/api}
 
 spring:
   devtools:
@@ -6,13 +6,13 @@ spring:
       enabled: true
     add-properties: true
   application:
-    name: falsework
-    version: 0.0.1
+    name: ${APP_NAME:falsework}
+    version: ${APP_VERSION:0.0.1}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://39.103.181.81:3306/tj_falsework
-    username: usr_tjfw
-    password: usr_tjfw_1234
+    url: jdbc:mysql://${DB_HOST:39.103.181.81}:${DB_PORT:3306}/${DB_NAME:tj_falsework}
+    username: ${DB_USERNAME:usr_tjfw}
+    password: ${DB_PASSWORD:usr_tjfw_1234}
 
 logging:
   level:
@@ -42,7 +42,7 @@ mybatis-plus:
     # 如果查询结果中包含空值的列，则 MyBatis 在映射的时候，不会映射这个字段
     call-setters-on-nulls: true
     # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: ${MYBATIS_LOG:org.apache.ibatis.logging.stdout.StdOutImpl}
     # log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl # 生产环境
 
 # springdoc-openapi
@@ -53,6 +53,7 @@ springdoc:
     operations-sorter: alpha
   api-docs:
     path: /v3/api-docs
+    enabled: ${APP_APP_DOC:true}
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
@@ -60,7 +61,7 @@ springdoc:
 
 # knife4j
 knife4j:
-  enable: true
+  enable: ${APP_APP_DOC:true}
   setting:
     language: zh_cn
 
