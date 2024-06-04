@@ -1,11 +1,13 @@
 package com.wamogu.entity.sys;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.tangzc.autotable.annotation.ColumnComment;
 import com.tangzc.autotable.annotation.ColumnDefault;
 import com.tangzc.autotable.annotation.ColumnType;
 import com.tangzc.autotable.annotation.enums.DefaultValueEnum;
 import com.tangzc.autotable.annotation.mysql.MysqlTypeConstant;
+import com.tangzc.mpe.autotable.annotation.Column;
 import com.tangzc.mpe.autotable.annotation.ColumnId;
 import com.tangzc.mpe.autotable.annotation.Table;
 import com.tangzc.mpe.base.entity.BaseEntity;
@@ -29,13 +31,9 @@ public class SysConfig extends BaseEntity<Integer, LocalDateTime> {
     private Integer id;
 
     @NotNull
-    @ColumnDefault(type = DefaultValueEnum.EMPTY_STRING)
-    @ColumnType(length = 100)
-    @ColumnComment("key")
+    @Column(value = "`key`", length = 100, notNull = true, comment = "key")
     private String key;
 
-    @ColumnDefault("")
-    @ColumnType(length = 1024)
-    @ColumnComment("设置值")
+    @Column(value = "`value`", length = 1024, comment = "设置值", defaultValueType = DefaultValueEnum.EMPTY_STRING)
     private String value;
 }

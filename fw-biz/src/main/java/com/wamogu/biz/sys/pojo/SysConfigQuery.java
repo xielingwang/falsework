@@ -1,9 +1,12 @@
 package com.wamogu.biz.sys.pojo;
 
 import com.wamogu.querykit.FwQueryBase;
+import com.wamogu.querykit.FwQueryEnum;
 import com.wamogu.querykit.anno.FwQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
+import java.util.List;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -21,14 +24,14 @@ public final class SysConfigQuery extends FwQueryBase {
             description = "id主键"
     )
     @FwQuery
-    private Integer id;
+    private List<Integer> id;
 
     @Schema(
             title = "key",
             description = "key"
     )
-    @FwQuery
-    private String key;
+    @FwQuery(type = FwQueryEnum.IN)
+    private List<String> key;
 
     @Schema(
             title = "设置值",
