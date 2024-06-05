@@ -9,6 +9,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.wamogu.exception.ErrorKit;
 import com.wamogu.querykit.FwQueryBase;
 import com.wamogu.querykit.FwQueryKit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.checkerframework.checker.units.qual.C;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -21,9 +24,12 @@ import java.util.Optional;
  * @Author Armin
  * @datDO 24-05-29 14:52
  */
+@AllArgsConstructor
 public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
-    protected abstract <R extends IService<DO>> R getBaseRepository();
-    protected abstract <C extends BaseCastor<DO, DTO, VO>> C getBaseCastor();
+    @Getter
+    protected IService<DO> baseRepository;
+    @Getter
+    protected BaseCastor<DO, DTO, VO> baseCastor;
 
 
     private Class<DO> clazzDO;

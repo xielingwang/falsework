@@ -185,7 +185,7 @@ public class FwQueryKit {
      * @param <T>       实体类
      * @return 分页结果
      */
-    public static <M extends BaseMapper<T>, T> Page<T> page(ServiceImpl<M, T> service, FwQueryBase query, boolean autoOrder) {
+    public static <M extends BaseMapper<T>, T> Page<T> page(IService<T> service, FwQueryBase query, boolean autoOrder) {
         Page<T> page = query.getPage(service.getEntityClass());
         return buildSearch(service, query, autoOrder)
                 .page(page);
@@ -200,7 +200,7 @@ public class FwQueryKit {
      * @param <T>     实体类
      * @return 分页结果
      */
-    public static <M extends BaseMapper<T>, T> Page<T> page(ServiceImpl<M, T> service, FwQueryBase query) {
+    public static <M extends BaseMapper<T>, T> Page<T> page(IService<T> service, FwQueryBase query) {
         return page(service, query, true);
     }
 

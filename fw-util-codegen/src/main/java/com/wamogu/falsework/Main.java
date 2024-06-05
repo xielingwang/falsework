@@ -15,23 +15,28 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.javapoet.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.lang.model.element.Modifier;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
 // Press ⇧ twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
+@Slf4j
 @UtilityClass
 public class Main {
     interface SUFFIX {
@@ -116,6 +121,7 @@ public class Main {
                 .classBuilder(bizServiceClassName)
                 .superclass(ParameterizedTypeName.get(CLASSNAME.classBaseBizService, entityClass, dtoClass, voClass, pkClass))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addAnnotation(Getter.class)
                 .addAnnotation(Service.class)
                 .addAnnotation(RequiredArgsConstructor.class);
 
@@ -125,13 +131,6 @@ public class Main {
 
         fields.entrySet().forEach(x -> {
             typeSpecBuilder.addField(FieldSpec.builder(x.getValue(), x.getKey(), Modifier.PRIVATE, Modifier.FINAL).build());
-
-            typeSpecBuilder.addMethod(MethodSpec.methodBuilder("get"+CharSequenceUtil.upperFirst(x.getKey()))
-                    .addModifiers(Modifier.PUBLIC)
-                    .addAnnotation(Override.class)
-                    .returns(x.getValue())
-                    .addCode(String.format("return this.%s;", x.getKey()))
-                    .build());
         });
 
         try {
@@ -171,6 +170,7 @@ public class Main {
                 .classBuilder(controllerClassName)
                 .superclass(ParameterizedTypeName.get(CLASSNAME.classBaseController, entityClass, dtoClass, voClass, queryClass, pkClass))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addAnnotation(Getter.class)
                 .addAnnotation(ResponseBody.class)
                 .addAnnotation(RestController.class)
                 .addAnnotation(RequiredArgsConstructor.class)
@@ -183,13 +183,6 @@ public class Main {
 
         fields.entrySet().forEach(x -> {
             typeSpecBuilder.addField(FieldSpec.builder(x.getValue(), x.getKey(), Modifier.PRIVATE, Modifier.FINAL).build());
-
-            typeSpecBuilder.addMethod(MethodSpec.methodBuilder("get"+CharSequenceUtil.upperFirst(x.getKey()))
-                    .addAnnotation(Override.class)
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(x.getValue())
-                    .addCode(String.format("return this.%s;", x.getKey()))
-                    .build());
         });
 
         try {
@@ -267,14 +260,18 @@ public class Main {
                 .addFileComment("")
                 .build();
 
-        String baseDir = "/Users/aminby/MacDir/earnings/falsework";
+        String baseDir = ResourceUtils.getFile("").getAbsolutePath();
         for (String prj : projects) {
             String filepath = String.format("%s/%s/src/main/java/%s/%s.java", baseDir, prj, javaFile.packageName.replaceAll("[.]", "/"), javaFile.typeSpec.name);
+            System.out.print(filepath);
             if (FileUtil.exist(filepath)) {
-                System.out.println("skipped " + filepath);
+                System.out.println(" skipped");
                 continue;
             }
-            javaFile.writeTo(FileUtil.file(filepath));
+
+            String prjJavaDir = String.format("%s/%s/src/main/java", baseDir, prj);
+            javaFile.writeTo(new File(prjJavaDir));
+            System.out.println(" done");
         }
     }
 

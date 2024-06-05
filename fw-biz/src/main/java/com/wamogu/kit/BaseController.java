@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.wamogu.querykit.FwQueryBase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +17,9 @@ import java.util.List;
  * @date 24-05-29 14:52
  */
 @Slf4j
+@Getter
 public abstract class BaseController<DO, DTO, VO, QO extends FwQueryBase, PK extends Serializable> {
-    protected abstract <BS extends BaseBizService<DO, DTO, VO, PK>> BS getBizService();
+    protected BaseBizService<DO, DTO, VO, PK> bizService;
 
     @GetMapping("/get/{id}")
     @Operation(summary = "获取item")
