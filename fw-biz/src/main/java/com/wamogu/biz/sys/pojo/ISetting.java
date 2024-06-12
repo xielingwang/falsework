@@ -2,7 +2,8 @@ package com.wamogu.biz.sys.pojo;
 
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.wamogu.entity.sys.SysConfig;
+import com.wamogu.entity.sys.Option;
+import com.wamogu.entity.sys.Option;
 import com.wamogu.kit.FwJsonUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -21,14 +22,14 @@ public interface ISetting {
         return Arrays.stream(ReflectUtil.getFields(SiteSettingDto.class))
                 .map(Field::getName).toList();
     }
-    default List<SysConfig> toSysConfigs() {
+    default List<Option> toOptions() {
         return Arrays.stream(ReflectUtil.getFields(this.getClass()))
-                .map(f -> SysConfig.builder().key(f.getName())
-                        .value(FwJsonUtils.bean2json(ReflectUtil.getFieldValue(this, f))).build()
+                .map(f -> Option.builder().optionKey(f.getName())
+                        .optionValue(FwJsonUtils.bean2json(ReflectUtil.getFieldValue(this, f))).build()
                 ).toList();
     }
-    default void fromSysConfigs(List<SysConfig> list) {
-        Map<String, String> listMap = list.stream().collect(Collectors.toMap(SysConfig::getKey, SysConfig::getValue));
+    default void fromOptions(List<Option> list) {
+        Map<String, String> listMap = list.stream().collect(Collectors.toMap(Option::getOptionKey, Option::getOptionValue));
         Arrays.stream(ReflectUtil.getFields(this.getClass()))
                 .forEachOrdered(f -> {
                     ReflectUtil.setFieldValue(this, f, FwJsonUtils.json2Bean(listMap.get(f.getName()), f.getType()));

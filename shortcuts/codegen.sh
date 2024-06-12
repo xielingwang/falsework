@@ -1,1 +1,1 @@
-mvn clean install -pl fw-dao && mvn exec:java -pl fw-util-codegen
+mvn clean && mvn install -pl fw-dao && mvn install -pl fw-kit && mvn exec:java -pl fw-util-codegen

@@ -36,6 +36,11 @@ logging:
 
 # mybatis-plus
 mybatis-plus:
+  global-config:
+    banner: on
+    db-config:
+      id-type: auto
+      table-prefix: fw_
   configuration:
     # 是否开启自动驼峰命名规则映射:从数据库列名到Java属性驼峰命名的类似映射
     map-underscore-to-camel-case: true
@@ -44,6 +49,8 @@ mybatis-plus:
     # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
     log-impl: ${MYBATIS_LOG:org.apache.ibatis.logging.stdout.StdOutImpl}
     # log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl # 生产环境
+  type-aliases-package: com.wamogu.viewmodels
+  type-enums-package: com.wamogu.constants
 
 # springdoc-openapi
 springdoc:

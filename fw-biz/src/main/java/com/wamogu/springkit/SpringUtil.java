@@ -1,4 +1,4 @@
-package com.wamogu.kit;
+package com.wamogu.springkit;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

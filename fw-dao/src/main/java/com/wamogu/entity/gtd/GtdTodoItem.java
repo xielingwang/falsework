@@ -2,6 +2,7 @@ package com.wamogu.entity.gtd;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.tangzc.autotable.annotation.ColumnComment;
 import com.tangzc.autotable.annotation.ColumnNotNull;
 import com.tangzc.autotable.annotation.PrimaryKey;
@@ -21,7 +22,8 @@ import java.time.LocalDateTime;
  */
 @Data @Builder @EqualsAndHashCode(callSuper=false)
 @AutoDefine @AutoRepository
-@Table(value = "gtd_todo_item", comment = "GTD-待办项")
+@Table(comment = "GTD-待办项")
+@TableName(value = "gtd_todo_items", autoResultMap = true)
 public class GtdTodoItem extends BaseEntity<Long, LocalDateTime> {
     @TableId(type = IdType.AUTO)
     @PrimaryKey(value = true)

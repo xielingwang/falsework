@@ -39,6 +39,7 @@ import java.util.*;
 @Slf4j
 @UtilityClass
 public class Main {
+    static final String CLASS_PREFIX = "Fw";
     interface SUFFIX {
         String VO = "Vo";
         String DTO = "Dto";
@@ -49,7 +50,7 @@ public class Main {
         String CASTOR = "Castor";
     }
 
-    interface CLASSNAME {
+    interface BASE_CLASS {
         ClassName classBaseBizService = ClassName.get("com.wamogu.kit", "BaseBizService");
         ClassName classBaseCastor = ClassName.get("com.wamogu.kit", "BaseCastor");
         ClassName classBaseController = ClassName.get("com.wamogu.kit", "BaseController");
@@ -65,29 +66,32 @@ public class Main {
     }
 
     private void generate(Class<?> enClass) {
-        createPojos(enClass, List.of("fw-biz"));
-        createCastor(enClass, List.of("fw-biz"));
-        createBizService(enClass, List.of("fw-biz"));
-        createBizController(enClass, List.of("fw-app-mgr"));
+        Map<String, ClassName> map = new HashMap<>();
+        map.put("PKType", ClassName.get(getPKType(enClass)));
+        map.put(SUFFIX.REPOSITORY, ClassName.get("com.wamogu.dao.repository", enClass.getSimpleName()+SUFFIX.REPOSITORY));
+        map.put(SUFFIX.VO, createVo(enClass, List.of("fw-biz"), map, true));
+        map.put(SUFFIX.QUERY, createQuery(enClass, List.of("fw-biz"), map, true));
+        map.put(SUFFIX.DTO, createDto(enClass, List.of("fw-biz"), map, true));
+        map.put(SUFFIX.CASTOR, createCastor(enClass, List.of("fw-biz"), map, true));
+        map.put(SUFFIX.BIZ_SERVICE, createBizService(enClass, List.of("fw-biz"), map, false));
+        map.put(SUFFIX.CONTROLLER, createBizController(enClass, List.of("fw-app-mgr"), map, false));
     }
 
-    private void createCastor(Class<?> enClass, List<String> projects) {
+    private ClassName createCastor(Class<?> enClass, List<String> projects, Map<String, ClassName> map, boolean override) {
 
         ClassName entityClass = ClassName.get(enClass);
 
-        String enName = enClass.getSimpleName();
         String bizPack = enClass.getPackageName().replace("entity", "biz");
-        String bizPojoPack = bizPack + ".pojo";
 
-        ClassName dtoClass = ClassName.get(bizPojoPack, enName+SUFFIX.DTO);
-        ClassName voClass = ClassName.get(bizPojoPack, enName+SUFFIX.VO);
+        ClassName dtoClass = map.get(SUFFIX.DTO);
+        ClassName voClass = map.get(SUFFIX.VO);
 
-        String castorClassName = enClass.getSimpleName()+SUFFIX.CASTOR;
+        String castorClassName = CLASS_PREFIX+enClass.getSimpleName()+SUFFIX.CASTOR;
 
         TypeSpec.Builder typeSpecBuilder = TypeSpec
                 .interfaceBuilder(castorClassName)
                 .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(ParameterizedTypeName.get(CLASSNAME.classBaseCastor, entityClass, dtoClass, voClass))
+                .addSuperinterface(ParameterizedTypeName.get(BASE_CLASS.classBaseCastor, entityClass, dtoClass, voClass))
                 .addAnnotation(AnnotationSpec.builder(Mapper.class)
                         .addMember("componentModel", "$S", "spring")
                         .addMember("uses", "{}")
@@ -95,31 +99,29 @@ public class Main {
                         .build());
 
         try {
-            writeJavaFile(bizPack+".convert", typeSpecBuilder, projects);
+            return writeJavaFile(bizPack+".convert", typeSpecBuilder, projects, override);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    private void createBizService(Class<?> enClass, List<String> projects) {
+    private ClassName createBizService(Class<?> enClass, List<String> projects, Map<String, ClassName> map, boolean override) {
         ClassName entityClass = ClassName.get(enClass);
 
-        String enName = enClass.getSimpleName();
         String bizPack = enClass.getPackageName().replace("entity", "biz");
-        String bizPojoPack = bizPack + ".pojo";
 
-        ClassName dtoClass = ClassName.get(bizPojoPack, enName+SUFFIX.DTO);
-        ClassName voClass = ClassName.get(bizPojoPack, enName+SUFFIX.VO);
-        ClassName queryClass = ClassName.get(bizPojoPack, enName+SUFFIX.QUERY);
-        ClassName repositoryClass = ClassName.get("com.wamogu.dao.repository", enName+SUFFIX.REPOSITORY);
-        ClassName castorClass = ClassName.get(bizPack+".convert", enName+SUFFIX.CASTOR);
-        ClassName pkClass = ClassName.get(getPKType(enClass));
+        ClassName dtoClass = map.get(SUFFIX.DTO);
+        ClassName voClass = map.get(SUFFIX.VO);
+        ClassName castorClass = map.get(SUFFIX.CASTOR);
+        ClassName repositoryClass = map.get(SUFFIX.REPOSITORY);
+        ClassName pkClass = map.get("PKType");
 
-        String bizServiceClassName = enClass.getSimpleName()+SUFFIX.BIZ_SERVICE;
+        String bizServiceClassName = CLASS_PREFIX+enClass.getSimpleName()+SUFFIX.BIZ_SERVICE;
 
         TypeSpec.Builder typeSpecBuilder = TypeSpec
                 .classBuilder(bizServiceClassName)
-                .superclass(ParameterizedTypeName.get(CLASSNAME.classBaseBizService, entityClass, dtoClass, voClass, pkClass))
+                .superclass(ParameterizedTypeName.get(BASE_CLASS.classBaseBizService, entityClass, dtoClass, voClass, pkClass))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addAnnotation(Getter.class)
                 .addAnnotation(Service.class)
@@ -134,10 +136,11 @@ public class Main {
         });
 
         try {
-            writeJavaFile(bizPack+".service", typeSpecBuilder, projects);
+            return writeJavaFile(bizPack+".service", typeSpecBuilder, projects, override);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     private Class<?> getPKType(Class<?> enClass) {
@@ -150,25 +153,22 @@ public class Main {
         return pkField.get().getType();
     }
 
-    private void createBizController(Class<?> enClass, List<String> projects) {
-
-        String bizPack = enClass.getPackageName().replace("entity", "biz");
-        String bizPojoPack = bizPack + ".pojo";
+    private ClassName createBizController(Class<?> enClass, List<String> projects, Map<String, ClassName> map, boolean override) {
 
         ClassName entityClass = ClassName.get(enClass);
-        ClassName dtoClass = ClassName.get(bizPojoPack, enClass.getSimpleName()+SUFFIX.DTO);
-        ClassName voClass = ClassName.get(bizPojoPack, enClass.getSimpleName()+SUFFIX.VO);
-        ClassName queryClass = ClassName.get(bizPojoPack, enClass.getSimpleName()+SUFFIX.QUERY);
-        ClassName pkClass = ClassName.get(getPKType(enClass));
-        ClassName bizServiceClass = ClassName.get(bizPack+".service", enClass.getSimpleName()+SUFFIX.BIZ_SERVICE);
+        ClassName dtoClass = map.get(SUFFIX.DTO);
+        ClassName voClass = map.get(SUFFIX.VO);
+        ClassName queryClass = map.get(SUFFIX.QUERY);
+        ClassName bizServiceClass = map.get(SUFFIX.BIZ_SERVICE);
+        ClassName pkClass = map.get("PKType");
 
         String comment = CharSequenceUtil.blankToDefault(enClass.getAnnotation(Table.class).comment(), enClass.getSimpleName());
-        String controllerClassName = enClass.getSimpleName()+SUFFIX.CONTROLLER;
+        String controllerClassName = CLASS_PREFIX+enClass.getSimpleName()+SUFFIX.CONTROLLER;
         String pack = enClass.getPackageName().replace("entity", "rest");
 
         TypeSpec.Builder typeSpecBuilder = TypeSpec
                 .classBuilder(controllerClassName)
-                .superclass(ParameterizedTypeName.get(CLASSNAME.classBaseController, entityClass, dtoClass, voClass, queryClass, pkClass))
+                .superclass(ParameterizedTypeName.get(BASE_CLASS.classBaseController, entityClass, dtoClass, voClass, queryClass, pkClass))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addAnnotation(Getter.class)
                 .addAnnotation(ResponseBody.class)
@@ -186,19 +186,15 @@ public class Main {
         });
 
         try {
-            writeJavaFile(pack, typeSpecBuilder, projects);
+            return writeJavaFile(pack, typeSpecBuilder, projects, override);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    private void createPojos(Class<?> enClass, List<String> projects) {
-        createVo(enClass, projects);
-        createQuery(enClass, projects);
-        createDto(enClass, projects);
-    }
-    private void createDto(Class<?> enClass, List<String> projects) {
-        String className = enClass.getSimpleName()+SUFFIX.DTO;
+    private ClassName createDto(Class<?> enClass, List<String> projects, Map<String, ClassName> map, boolean override) {
+        String className = CLASS_PREFIX+enClass.getSimpleName()+SUFFIX.DTO;
         String pack = enClass.getPackageName().replace("entity", "biz")+".pojo";
 
         TypeSpec.Builder typeSpecBuilder = TypeSpec
@@ -230,10 +226,11 @@ public class Main {
         });
 
         try {
-            writeJavaFile(pack, typeSpecBuilder, projects);
+            return writeJavaFile(pack, typeSpecBuilder, projects, override);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     private String getColumnComment(Field x) {
@@ -248,7 +245,7 @@ public class Main {
         return x.getName();
     }
 
-    private void writeJavaFile(String pack, TypeSpec.Builder typeSpecBuilder, List<String> projects) throws IOException {
+    private ClassName writeJavaFile(String pack, TypeSpec.Builder typeSpecBuilder, List<String> projects, boolean override) throws IOException {
         typeSpecBuilder.addJavadoc(String.format("""
                 generated by FwUtilCodegen
                 @since %s
@@ -264,7 +261,7 @@ public class Main {
         for (String prj : projects) {
             String filepath = String.format("%s/%s/src/main/java/%s/%s.java", baseDir, prj, javaFile.packageName.replaceAll("[.]", "/"), javaFile.typeSpec.name);
             System.out.print(filepath);
-            if (FileUtil.exist(filepath)) {
+            if (FileUtil.exist(filepath) && !override) {
                 System.out.println(" skipped");
                 continue;
             }
@@ -273,15 +270,16 @@ public class Main {
             javaFile.writeTo(new File(prjJavaDir));
             System.out.println(" done");
         }
+        return ClassName.get(pack, javaFile.typeSpec.name);
     }
 
-    private void createQuery(Class<?> enClass, List<String> projects) {
-        String className = enClass.getSimpleName()+SUFFIX.QUERY;
+    private ClassName createQuery(Class<?> enClass, List<String> projects, Map<String, ClassName> map, boolean override) {
+        String className = CLASS_PREFIX+enClass.getSimpleName()+SUFFIX.QUERY;
         String pack = enClass.getPackageName().replace("entity", "biz")+".pojo";
 
         TypeSpec.Builder typeSpecBuilder = TypeSpec
                 .classBuilder(className)
-                .superclass(CLASSNAME.classFwQueryBase)
+                .superclass(BASE_CLASS.classFwQueryBase)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addAnnotation(Data.class)
                 .addAnnotation(AnnotationSpec.builder(EqualsAndHashCode.class).addMember("callSuper", "true").build())
@@ -291,18 +289,19 @@ public class Main {
             String columnComment = getColumnComment(x);
             typeSpecBuilder.addField(FieldSpec.builder(x.getType(), x.getName(), Modifier.PRIVATE)
                     .addAnnotation(swagger3Schema(columnComment))
-                    .addAnnotation(CLASSNAME.classFwQuery)
+                    .addAnnotation(BASE_CLASS.classFwQuery)
                     .build());
         });
 
         try {
-            writeJavaFile(pack, typeSpecBuilder, projects);
+            return writeJavaFile(pack, typeSpecBuilder, projects, override);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
-    private void createVo(Class<?> enClass, List<String> projects) {
-        String className = enClass.getSimpleName()+SUFFIX.VO;
+    private ClassName createVo(Class<?> enClass, List<String> projects, Map<String, ClassName> map, boolean override) {
+        String className = CLASS_PREFIX+enClass.getSimpleName()+SUFFIX.VO;
         String pack = enClass.getPackageName().replace("entity", "biz")+".pojo";
         TypeSpec.Builder typeSpecBuilder = TypeSpec
                 .classBuilder(className)
@@ -319,10 +318,11 @@ public class Main {
         });
 
         try {
-            writeJavaFile(pack, typeSpecBuilder, projects);
+            return writeJavaFile(pack, typeSpecBuilder, projects, override);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     private String getTableComment(Class<?> enClass) {

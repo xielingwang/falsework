@@ -5,6 +5,11 @@
 - [ ] 引入 apijson 试验 // 放弃
 - [ ] 引入 amis
 
+### 云资源支持
+
+- OSS [OSSUnity](https://github.com/linkxs/OSSUnity) [Dante OSS](https://gitee.com/herodotus/dante-oss)
+- 
+
 ### 异常处理
 
 - [ ] 引入 [graceful-response](https://doc.feiniaojin.com/graceful-response/home.html)
@@ -92,6 +97,8 @@
 - GTD
   - [x] TodoItem
   - [ ] Label / Project
+- Blog
+  - [ ] Article
 
 ### 第三方对接
 
@@ -115,3 +122,9 @@
 - [x] 优先使用国内镜像仓库
 
 ### 部署
+
+## 前端 
+
+### 接口
+
+- [ ] https://github.com/reeli/ts-codegen
