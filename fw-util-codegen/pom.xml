@@ -52,7 +52,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>com.wamogu.falsework.Main</mainClass>
+                    <mainClass>com.wamogu.falsework.CodegenApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>

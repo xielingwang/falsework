@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.wamogu.po.BaseUserIdentify;
-import com.wamogu.po.UserIdentifyPhone;
+import com.wamogu.po.UserAuthPhone;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum UserIdentifyType implements IEnumerator {
-    PHONE_VERIFY("pp","手机号验证", UserIdentifyPhone.class),
-    EMAIL_VERIFY("ep","邮箱验证", UserIdentifyPhone.class),
-    // WX_LOGIN("wx","微信登录", UserIdentifyPhone.class),
-    // WEIBO_LOGIN("wb","微信登录", UserIdentifyPhone.class),
+    PHONE_VERIFY("pp","手机号验证", UserAuthPhone.class),
+    EMAIL_VERIFY("ep","邮箱验证", UserAuthPhone.class),
+    // WX_LOGIN("wx","微信登录", UserAuthPhone.class),
+    // WEIBO_LOGIN("wb","微信登录", UserAuthPhone.class),
     ;
 
     @EnumValue

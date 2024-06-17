@@ -13,10 +13,7 @@ import com.tangzc.mpe.autotable.annotation.ColumnId;
 import com.tangzc.mpe.autotable.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.Mapper;
@@ -32,13 +29,14 @@ import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.TypeVariable;
 import java.util.*;
 
 // Press ⇧ twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 @Slf4j
 @UtilityClass
-public class Main {
+public class CodegenApp {
     static final String CLASS_PREFIX = "Fw";
     interface SUFFIX {
         String VO = "Vo";
@@ -206,7 +204,7 @@ public class Main {
         List<Class<? extends Object>> supportedClasses = List.of(Integer.class, int.class, Double.class, double.class, Long.class, long.class, String.class, CharSequence.class);
         Arrays.stream(ReflectUtil.getFields(enClass)).forEachOrdered(x -> {
             String columnComment = getColumnComment(x);
-            FieldSpec.Builder fieldSpecBuilder = FieldSpec.builder(x.getType(), x.getName(), Modifier.PRIVATE)
+            FieldSpec.Builder fieldSpecBuilder = FieldSpec.builder(toTypename(x), x.getName(), Modifier.PRIVATE)
                     .addAnnotation(swagger3Schema(columnComment));
             Arrays.stream(x.getAnnotations()).forEach(anno -> {
                 if (anno.annotationType().getPackageName().contains("jakarta.validation.constraints")) {
@@ -287,7 +285,7 @@ public class Main {
 
         Arrays.stream(ReflectUtil.getFields(enClass)).forEachOrdered(x -> {
             String columnComment = getColumnComment(x);
-            typeSpecBuilder.addField(FieldSpec.builder(x.getType(), x.getName(), Modifier.PRIVATE)
+            typeSpecBuilder.addField(FieldSpec.builder(toTypename(x), x.getName(), Modifier.PRIVATE)
                     .addAnnotation(swagger3Schema(columnComment))
                     .addAnnotation(BASE_CLASS.classFwQuery)
                     .build());
@@ -300,6 +298,11 @@ public class Main {
         }
         return null;
     }
+
+    private static TypeName toTypename(Field field) {
+        return TypeName.get(field.getGenericType());
+    }
+
     private ClassName createVo(Class<?> enClass, List<String> projects, Map<String, ClassName> map, boolean override) {
         String className = CLASS_PREFIX+enClass.getSimpleName()+SUFFIX.VO;
         String pack = enClass.getPackageName().replace("entity", "biz")+".pojo";
@@ -312,7 +315,7 @@ public class Main {
 
         Arrays.stream(ReflectUtil.getFields(enClass)).forEachOrdered(x -> {
             String columnComment = getColumnComment(x);
-            typeSpecBuilder.addField(FieldSpec.builder(x.getType(), x.getName(), Modifier.PRIVATE)
+            typeSpecBuilder.addField(FieldSpec.builder(toTypename(x), x.getName(), Modifier.PRIVATE)
                     .addAnnotation(swagger3Schema(columnComment))
                     .build());
         });

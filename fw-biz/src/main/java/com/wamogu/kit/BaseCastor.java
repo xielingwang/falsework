@@ -16,6 +16,8 @@ public interface BaseCastor<DO, DTO, VO> {
     List<DTO> dos2dtos(List<DO> list);
     List<DO> dtos2dos(List<DTO> list);
     List<VO> dos2vos(List<DO> list);
-
+    VO dto2vo(DTO obj);
+    List<VO> dtos2vos(List<DTO> list);
     Page<VO> pageDo2vo(IPage<DO> page);
+    Page<VO> pageDto2vo(IPage<DTO> page);
 }

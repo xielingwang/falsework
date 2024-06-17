@@ -32,7 +32,7 @@ logging:
   logback:
     rollingpolicy:
       max-history: 3
-      max-file-size: 1MB
+      max-file-size: 10MB
 
 # mybatis-plus
 mybatis-plus:
@@ -76,9 +76,18 @@ knife4j:
 graceful-response:
   # exclude-packages:
   # exclude-return-types:
-  default-validate-error-code: 400
+  # default-validate-error-code: 400
   exclude-packages:
     - springfox.**
     - org.springframework.boot.actuate.*
   exclude-urls:
     - /**/v3/api-docs/*
+    
+
+fwapp:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days

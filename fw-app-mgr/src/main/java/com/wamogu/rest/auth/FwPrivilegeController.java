@@ -1,10 +1,10 @@
 package com.wamogu.rest.auth;
 
-import com.wamogu.biz.auth.pojo.FwAccessDto;
-import com.wamogu.biz.auth.pojo.FwAccessQuery;
-import com.wamogu.biz.auth.pojo.FwAccessVo;
-import com.wamogu.biz.auth.service.FwAccessBizService;
-import com.wamogu.entity.auth.Access;
+import com.wamogu.biz.auth.pojo.FwPrivilegeDto;
+import com.wamogu.biz.auth.pojo.FwPrivilegeQuery;
+import com.wamogu.biz.auth.pojo.FwPrivilegeVo;
+import com.wamogu.biz.auth.service.FwPrivilegeBizService;
+import com.wamogu.entity.auth.Privilege;
 import com.wamogu.kit.BaseController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(
         name = "AUTH-权限项表"
 )
-@RequestMapping("/access")
-public final class FwAccessController extends BaseController<Access, FwAccessDto, FwAccessVo, FwAccessQuery, Integer> {
-    private final FwAccessBizService bizService;
+@RequestMapping("/privilege")
+public final class FwPrivilegeController extends BaseController<Privilege, FwPrivilegeDto, FwPrivilegeVo, FwPrivilegeQuery, Integer> {
+    private final FwPrivilegeBizService bizService;
 }

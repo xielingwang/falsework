@@ -18,13 +18,13 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Table(comment = "AUTH-权限项表")
-@TableName(value = "auth_accesses", autoResultMap = true)
+@TableName(value = "auth_privileges", autoResultMap = true)
 @AutoDefine
 @AutoRepository
-public class Access extends ImmutableEnity {
-    @Column(comment = "权限项")
-    private String accessKey;
+public class Privilege extends ImmutableEnity {
+    @Column(comment = "权限项(PRIV_开头)")
+    private String privilegeKey;
     @Column(comment = "权限说明")
     @TableField(typeHandler = JacksonTypeHandler.class)
-    private String accessRemark;
+    private String privilegeRemark;
 }
