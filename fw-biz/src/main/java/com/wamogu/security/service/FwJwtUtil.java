@@ -1,20 +1,22 @@
 package com.wamogu.security.service;
 
-import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.codec.Base64Encoder;
+import cn.hutool.core.util.HexUtil;
+import com.wamogu.exception.ErrorKit;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.io.Encoders;
+import io.jsonwebtoken.io.DeserializationException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
-import java.security.Signature;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,12 +90,20 @@ public class FwJwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts
+                    .parserBuilder()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (SignatureException e) {
+            throw new ErrorKit.Forbidden("token被篡改", e);
+        } catch (ExpiredJwtException e) {
+            throw  new ErrorKit.Forbidden("token已过期", e);
+        } catch (Exception e) {
+            throw new ErrorKit.Forbidden("错误的token", e);
+        }
     }
 
     private Key getSignInKey() {
@@ -102,11 +112,21 @@ public class FwJwtUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println("secret key: " + genSecretKey());
+        SecretKey sk = genSecretKey();
+        System.out.println("secret key: " + tohexSecretKey(sk));
+        System.out.println("secret key: " + toBase64SecretKey(sk));
     }
 
-    private static String genSecretKey() {
-        SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-        return Encoders.BASE64.encode(key.getEncoded());
+    private static String toBase64SecretKey(SecretKey sk) {
+        return Base64Encoder.encode(sk.getEncoded());
     }
+
+    private static String tohexSecretKey(SecretKey sk) {
+        return HexUtil.encodeHexStr(sk.getEncoded()).toUpperCase();
+    }
+
+    private static SecretKey genSecretKey() {
+        return Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    }
+
 }

@@ -20,6 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 /**
  * @Author Armin
  * @date 24-06-14 15:05
@@ -73,7 +75,7 @@ public class FwAuthBizSerivce {
         fwTokenStorage.saveToken(userDto, jwtToken);
         return FwTokenVo.builder().token(jwtToken)
                 .refreshToken(refreshToken)
-                .tokenWithType(FwTokenType.BEARER_ST + jwtToken)
+                .currentTime(LocalDateTime.now())
                 .build();
     }
 

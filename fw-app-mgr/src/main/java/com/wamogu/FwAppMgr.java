@@ -12,7 +12,7 @@ import org.springframework.core.env.Environment;
 import java.net.InetAddress;
 
 @Slf4j
-// @EnableGracefulResponse
+@EnableGracefulResponse
 @EnableAutoTable
 @SpringBootApplication
 public class FwAppMgr {

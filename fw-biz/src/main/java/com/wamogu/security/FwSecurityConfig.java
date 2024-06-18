@@ -41,7 +41,7 @@ public class FwSecurityConfig {
     /**
      * 白名单路径
      */
-    private static final String[] WHITE_LIST_URL = {
+    public static final String[] WHITE_LIST_URL = {
             // springfox
             "/doc.html",
             "/webjars/js/**",
@@ -50,6 +50,7 @@ public class FwSecurityConfig {
             "/gtd_todo_item/**",
             // auth
             "/auth/**",
+            "/demo/**",
     };
 
     @Bean

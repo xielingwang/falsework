@@ -3,6 +3,8 @@ package com.wamogu.security.model;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * @Author Armin
  * @date 24-06-14 17:12
@@ -12,5 +14,5 @@ import lombok.Data;
 public class FwTokenVo {
     private String token;
     private String refreshToken;
-    private String tokenWithType;
+    private LocalDateTime currentTime;
 }

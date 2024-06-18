@@ -77,6 +77,14 @@ graceful-response:
   # exclude-packages:
   # exclude-return-types:
   # default-validate-error-code: 400
+  origin-exception-using-detail-message: false
+  # 是否打印异常日志，默认为false
+  print-exception-in-global-advice: true
+  default-error-code: 5000
+  default-error-msg: 未知异常
+  default-success-code: 200
+  default-success-msg: OK
+  default-validate-error-code: 400
   exclude-packages:
     - springfox.**
     - org.springframework.boot.actuate.*
@@ -87,7 +95,7 @@ graceful-response:
 fwapp:
   security:
     jwt:
-      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-      expiration: 86400000 # a day
+      secret-key: 922FB11AED9DDD7AAE57A26913423F5D5958F9B378487002385E873AAFDC4C3F
+      expiration: 60000 # 86400000 # a day
       refresh-token:
-        expiration: 604800000 # 7 days
+        expiration: 120000 # 604800000 # 7 days
