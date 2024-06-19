@@ -1,6 +1,7 @@
 package com.wamogu.biz.gtd.pojo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -27,6 +28,9 @@ public final class FwGtdTodoItemDto {
     )
     @NotNull(
             message = "内容不为空"
+    )
+    @NotBlank(
+            message = "内容不为空2"
     )
     private String content;
 

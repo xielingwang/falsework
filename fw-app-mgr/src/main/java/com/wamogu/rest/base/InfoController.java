@@ -1,11 +1,9 @@
 package com.wamogu.rest.base;
 
+import com.wamogu.security.annotation.FwAnonymousAccess;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author Armin
@@ -17,14 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 @ResponseBody
 @RequestMapping("/base")
 public class InfoController {
+    @FwAnonymousAccess
     @GetMapping("/health")
     public String health() {
         return "health";
     }
 
-    @GetMapping("/info")
-    public String info() {
-        return "Hello World";
+    @FwAnonymousAccess
+    @GetMapping("/info/{str}")
+    public String info(@PathVariable("str") String str) {
+        return String.format("Hello %s!", str);
     }
 
     @GetMapping("/logging")

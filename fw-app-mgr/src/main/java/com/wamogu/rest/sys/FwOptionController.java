@@ -1,10 +1,14 @@
 package com.wamogu.rest.sys;
 
+import com.feiniaojin.gracefulresponse.api.ValidationStatusCode;
 import com.wamogu.biz.sys.pojo.*;
 import com.wamogu.biz.sys.service.FwOptionBizService;
 import com.wamogu.entity.sys.Option;
+import com.wamogu.exception.ErrorKit;
 import com.wamogu.kit.BaseController;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +28,15 @@ import org.springframework.web.bind.annotation.*;
 public final class FwOptionController extends BaseController<Option, FwOptionDto, FwOptionVo, FwOptionQuery, Integer> {
     private final FwOptionBizService bizService;
 
+    @Operation(description = "获得系统配置", summary = "获得系统配置")
     @GetMapping("/site")
+    @Valid
     public SettingVo getSysSetting() {
         return getBizService().getSetting(SiteSettingDto.class).toVo();
     }
+    @Operation(description = "保存系统配置", summary = "保存系统配置")
     @PostMapping("/site")
+    @Valid
     public SettingVo setSysSetting(@RequestBody SiteSettingDto dto) {
         return getBizService().setSetting(dto).toVo();
     }

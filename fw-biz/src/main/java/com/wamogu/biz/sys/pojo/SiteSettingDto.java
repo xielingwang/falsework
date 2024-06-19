@@ -1,6 +1,7 @@
 package com.wamogu.biz.sys.pojo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -10,6 +11,7 @@ import lombok.Data;
 @Data
 public class SiteSettingDto implements ISetting {
     @Schema(title = "网站名称", description = "网站名称")
+    @NotBlank(message = "siteTitle 不为空")
     private String siteTitle;
     @Schema(title = "网站描述", description = "网站描述")
     private String siteDesciption;

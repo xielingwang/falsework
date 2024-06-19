@@ -52,4 +52,11 @@ public class FwTokenStorageMapImpl implements FwTokenStorage {
         storedToken.setRevoked(true);
         map.put(storedToken.getToken(), storedToken);
     }
+
+    @Override
+    public void expire(String token) {
+        if (map.containsKey(token)) {
+            expire(map.get(token));
+        }
+    }
 }

@@ -40,9 +40,9 @@ public class FwContextRefreshEventListner implements
     @Transactional
     public void onApplicationEvent(ApplicationStartedEvent event) {
 
+        alreadySetup = userBizService.findByAvailableUsername("fwadmin").orElse(null) != null;
         if (alreadySetup)
             return;
-
 
         FwPrivilegeDto readPrivilege = createPrivilegeIfNotFound("PRIV_READ");
         FwPrivilegeDto writePrivilege = createPrivilegeIfNotFound("PRIV_WRITE");
@@ -70,7 +70,7 @@ public class FwContextRefreshEventListner implements
     }
 
     @Transactional
-    FwPrivilegeDto createPrivilegeIfNotFound(String privKey) {
+    public FwPrivilegeDto createPrivilegeIfNotFound(String privKey) {
 
         FwPrivilegeDto dto = privilegeBizService.findByKey(privKey);
         if (dto == null) {
@@ -83,7 +83,7 @@ public class FwContextRefreshEventListner implements
     }
 
     @Transactional
-    FwRoleDto createRoleIfNotFound(
+    public FwRoleDto createRoleIfNotFound(
             String roleKey, List<FwPrivilegeDto> privileges) {
 
         FwRoleDto role = roleBizService.findByKey(roleKey);

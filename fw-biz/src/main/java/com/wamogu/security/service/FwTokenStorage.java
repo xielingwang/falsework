@@ -20,6 +20,7 @@ public interface FwTokenStorage {
     void expireTokenHistories(FwUserDto userDto);
 
     void expire(FwToken storedToken);
+    void expire(String token);
 
     @Setter
     @Getter

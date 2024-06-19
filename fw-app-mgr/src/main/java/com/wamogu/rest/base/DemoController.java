@@ -1,6 +1,8 @@
 package com.wamogu.rest.base;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wamogu.exception.ErrorKit;
+import com.wamogu.security.annotation.FwAnonymousAccess;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @ResponseBody
 @RequestMapping("/demo")
+@FwAnonymousAccess
 public class DemoController {
-    @GetMapping("/ex/fatal")
+    @GetMapping({"/ex/fatal", "/fatal-exception"})
     public String ex() {
-        throw new ErrorKit.Fatal("Fatal");
+        throw new ErrorKit.Fatal("Fatal Message");
+    }
+    @GetMapping({"/page", "/pg"})
+    public Page<String> page() {
+        return new Page<>(1, 2);
     }
 }

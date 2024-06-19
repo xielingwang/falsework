@@ -1,9 +1,11 @@
 package com.wamogu.rest.auth;
 
 import com.wamogu.biz.auth.service.FwAuthBizSerivce;
+import com.wamogu.security.annotation.FwAnonymousAccess;
 import com.wamogu.security.model.FwPwdLoginQuery;
 import com.wamogu.security.model.FwPwdRegQuery;
 import com.wamogu.security.model.FwTokenVo;
+import com.wamogu.security.service.FwJwtKitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +32,7 @@ public class FwAuthController {
     @PostMapping("/pwdRegister")
     @Operation(summary = "用户密码注册")
     @ApiResponse(responseCode = "200", description = "注册成功")
+    @FwAnonymousAccess
     public FwTokenVo pwdRegister(@Valid @RequestBody FwPwdRegQuery query) {
         return fwAuthBizSerivce.pwdRegister(query);
     }
@@ -38,6 +41,7 @@ public class FwAuthController {
     @PostMapping("/pwdLogin")
     @Operation(summary = "用户密码登录")
     @ApiResponse(responseCode = "200", description = " 登录成功")
+    @FwAnonymousAccess
     public FwTokenVo pwdLogin(@Valid @RequestBody FwPwdLoginQuery query) {
         return fwAuthBizSerivce.pwdLogin(query);
     }
@@ -45,7 +49,14 @@ public class FwAuthController {
     @PostMapping("/refresh-token")
     @Operation(summary = "token 刷新")
     @ApiResponse(responseCode = "200", description = "刷新成功")
-    public FwTokenVo pwdLogin(@RequestHeader("Authorization") String authHeader) {
-        return fwAuthBizSerivce.refreshToken(authHeader);
+    @FwAnonymousAccess
+    public FwTokenVo refreshToken(String refreshToken) {
+        return fwAuthBizSerivce.refreshToken(refreshToken);
+    }
+    @PostMapping("/logout")
+    @Operation(summary = "token 登出")
+    @ApiResponse(responseCode = "200", description = "登出成功")
+    public void logout(@RequestHeader("Authorization") String authHeader) {
+        fwAuthBizSerivce.logout(authHeader);
     }
 }
