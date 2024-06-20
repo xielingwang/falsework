@@ -9,8 +9,10 @@ import com.wamogu.security.annotation.FwAnonymousAccess;
 import com.wamogu.security.service.FwSecurityService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,9 @@ public class InfoController {
 
     private final FwSecurityService fss;
 
+    @Value("${maven.package-time:unknown}")
+    String mavenPackageTime;
+
     @FwAnonymousAccess
     @GetMapping("/health")
     public String health() {
@@ -37,9 +42,9 @@ public class InfoController {
     }
 
     @FwAnonymousAccess
-    @GetMapping("/info/{str}")
-    public String info(@PathVariable("str") String str) {
-        return String.format("Hello %s!", str);
+    @GetMapping("/info")
+    public Map<String, String> info() {
+        return Map.of("packagedTime", mavenPackageTime);
     }
 
     @GetMapping("/logging")

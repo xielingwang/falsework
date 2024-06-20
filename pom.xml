@@ -31,6 +31,7 @@
         <knife4j.version>4.5.0</knife4j.version>
         <lombok.version>1.18.32</lombok.version>
         <mapstruct.version>1.6.0.Beta2</mapstruct.version>
+        <maven.build.timestamp.format>yyyyMMdd_HHmmss</maven.build.timestamp.format>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <mybatis-test.version>3.0.3</mybatis-test.version>
@@ -38,6 +39,7 @@
         <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <spring-mpe.version>3.5.6-EXT683</spring-mpe.version>
+        <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -207,7 +209,50 @@
     </repositories>
 
     <build>
+        <finalName>${project.artifactId}-${project.version}_${timestamp}</finalName>
         <plugins>
+
+            <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/build-helper-maven-plugin -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <name>current.time</name>
+                    <pattern>${maven.build.timestamp.format}}</pattern>
+                    <timeZone>GMT+8</timeZone>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>timestamp-property</id>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.16.2</version>
+                <configuration>
+                    <ruleSet>
+                        <ignoreVersions>
+                            <!-- 可以使用 ignoreVersion 配置忽略 SNAPSHOT、alpha、beta 版等 -->
+                            <ignoreVersion>
+                                <!-- 'exact' (默认) 或 'regex' -->
+                                <type>regex</type>
+                                <version>(.+-SNAPSHOT|.+-M\d)</version>
+                            </ignoreVersion>
+                            <ignoreVersion>
+                                <type>regex</type>
+                                <version>.+-(alpha|beta)</version>
+                            </ignoreVersion>
+                        </ignoreVersions>
+                    </ruleSet>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>

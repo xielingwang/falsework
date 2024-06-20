@@ -90,6 +90,8 @@ graceful-response:
   exclude-urls:
     - /**/v3/api-docs/*
     
+maven:
+  package-time: @timestamp@
 
 fwapp:
   security:
