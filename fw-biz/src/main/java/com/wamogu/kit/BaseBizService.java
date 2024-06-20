@@ -24,6 +24,7 @@ import java.util.Optional;
  * @Author Armin
  * @datDO 24-05-29 14:52
  */
+@Getter
 @AllArgsConstructor
 public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
     @Getter

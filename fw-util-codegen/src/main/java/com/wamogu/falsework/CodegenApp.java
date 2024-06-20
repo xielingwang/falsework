@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ClassUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.tangzc.autotable.annotation.ColumnComment;
@@ -16,10 +17,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.*;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.el.util.ReflectionUtil;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.javapoet.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -213,6 +216,9 @@ public class CodegenApp {
                         if (supportedClasses.contains(method.getReturnType())) {
                             Object r = ReflectUtil.invoke(anno, method);
                             if (r != null) {
+                                if (r instanceof CharSequence && r.toString().startsWith("{")) {
+                                    return;
+                                }
                                 annoSpecBuilder.addMember(method.getName(), "$S", r);
                             }
                         }

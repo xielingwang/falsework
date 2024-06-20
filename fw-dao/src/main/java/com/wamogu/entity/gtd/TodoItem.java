@@ -2,7 +2,6 @@ package com.wamogu.entity.gtd;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.tangzc.autotable.annotation.ColumnComment;
-import com.tangzc.autotable.annotation.enums.DefaultValueEnum;
 import com.tangzc.mpe.autotable.annotation.Column;
 import com.tangzc.mpe.autotable.annotation.Table;
 import com.tangzc.mpe.processer.annotation.AutoDefine;
@@ -21,7 +20,7 @@ import java.time.LocalDateTime;
 @AutoDefine @AutoRepository
 @Table(comment = "GTD-待办项")
 @TableName(value = "gtd_todo_items", autoResultMap = true)
-public class GtdTodoItem extends MutableEntity {
+public class TodoItem extends MutableEntity {
 
     @Column(comment = "用户id", notNull = true)
     private Long uid;

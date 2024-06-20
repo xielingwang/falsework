@@ -46,9 +46,14 @@
 
 ### 权限安全
 
-- [ ] 引入 spring-security
-- [ ] RBAC 设计
-- [ ] 实现 jwt 登录
+- [x] 引入 spring-security
+- [x] RBAC 设计
+- [x] 实现 jwt 登录
+- [ ] @Expose/@NotExpose 暴露/不暴露接口
+- [ ] @Permission/@Role 接口鉴权，快速实现用户、角色、权限功能
+- [ ] @Ban 功能禁用，快速实现禁用用户评论、发帖等功能
+- [ ] @Log 快速实现日志记录
+- [ ] AuthUtil.getUser refresh login hasPermission
 
 ### 文件管理
 

@@ -22,8 +22,10 @@ import lombok.EqualsAndHashCode;
 @AutoDefine
 @AutoRepository
 public class Privilege extends ImmutableEnity {
-    @Column(comment = "权限项(PRIV_开头)")
+    @Column(comment = "权限项")
     private String privilegeKey;
+    @Column(comment = "权限项")
+    private String privilegeGroup;
     @Column(comment = "权限说明")
     @TableField(typeHandler = JacksonTypeHandler.class)
     private String privilegeRemark;

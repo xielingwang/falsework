@@ -1,10 +1,12 @@
 package com.wamogu.security.service;
 
 import com.wamogu.biz.auth.pojo.FwUserDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.beans.ConstructorProperties;
 import java.util.Optional;
 
 /**
@@ -20,7 +22,6 @@ public interface FwTokenStorage {
     void expireTokenHistories(FwUserDto userDto);
 
     void expire(FwToken storedToken);
-    void expire(String token);
 
     @Setter
     @Getter
@@ -31,5 +32,14 @@ public interface FwTokenStorage {
         private boolean expired;
         private boolean revoked;
         private String tokenType;
+
+        @ConstructorProperties({"token", "uid", "expired", "revoked", "tokenType"})
+        public FwToken(String token, Integer uid, boolean expired, boolean revoked, String tokenType) {
+            this.token = token;
+            this.uid = uid;
+            this.expired = expired;
+            this.revoked = revoked;
+            this.tokenType = tokenType;
+        }
     }
 }

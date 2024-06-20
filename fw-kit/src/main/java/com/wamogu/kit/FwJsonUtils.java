@@ -1,14 +1,18 @@
 package com.wamogu.kit;
 
+import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.wamogu.config.DateConfig;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -24,7 +28,7 @@ public class FwJsonUtils {
         // 设置时区
         mapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
         // 日期类型格式
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        mapper.setDateFormat(new SimpleDateFormat(DatePattern.NORM_DATETIME_PATTERN));
         // 序列化所有参数，包括null
         mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
     }
@@ -44,6 +48,18 @@ public class FwJsonUtils {
         }
         try {
             return mapper.readValue(jsonStr, objClass);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public <T> List<T> json2list(String jsonStr, Class<T> objClass) {
+        if (CharSequenceUtil.isBlank(jsonStr)) {
+            return null;
+        }
+        try {
+            return mapper.readerForListOf(objClass).readValue(jsonStr);
         } catch (IOException e) {
             e.printStackTrace();
             return null;

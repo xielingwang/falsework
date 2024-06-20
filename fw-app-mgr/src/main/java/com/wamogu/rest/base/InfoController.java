@@ -1,9 +1,20 @@
 package com.wamogu.rest.base;
 
+import cn.hutool.core.util.ClassUtil;
+import cn.hutool.core.util.StrUtil;
+import com.tangzc.mpe.autotable.annotation.Table;
+import com.wamogu.biz.auth.pojo.FwPrivilegeVo;
 import com.wamogu.security.annotation.FwAnonymousAccess;
+import com.wamogu.security.service.FwSecurityService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @Author Armin
@@ -14,7 +25,10 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @ResponseBody
 @RequestMapping("/base")
+@RequiredArgsConstructor
 public class InfoController {
+    private final FwSecurityService fss;
+
     @FwAnonymousAccess
     @GetMapping("/health")
     public String health() {
@@ -33,6 +47,13 @@ public class InfoController {
         log.debug("debug", new Exception());
         log.info("info", new Exception());
         log.error("error", new Exception());
+        SecurityContext securityContext = SecurityContextHolder.getContext();
         return "logging";
+    }
+
+    @FwAnonymousAccess
+    @GetMapping("/scan-privileges")
+    public List<FwPrivilegeVo> getAllPrivileges() {
+        return fss.crudPrivileges();
     }
 }

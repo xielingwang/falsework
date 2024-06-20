@@ -8,6 +8,7 @@ import cn.hutool.core.util.StrUtil;
 import com.wamogu.biz.auth.pojo.FwUserDto;
 import com.wamogu.biz.auth.service.FwUserBizService;
 import com.wamogu.exception.ErrorKit;
+import com.wamogu.security.FwSecurityProperties;
 import com.wamogu.security.constants.FwTokenType;
 import com.wamogu.security.model.FwTokenVo;
 import com.wamogu.security.model.FwUserDetails;
@@ -34,13 +35,7 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class FwJwtKitService {
-    @Value("${fwapp.security.jwt.secret-key}")
-    String secretKey;
-    @Value("${fwapp.security.jwt.token-life-minutes}")
-    long jwtLifeMinutes;
-    @Value("${fwapp.security.jwt.refresh-token-life-minutes}")
-    long jwtRefreshLifeMinutes;
-
+    private final FwSecurityProperties fwSecurityProperties;
     private final FwTokenStorage fwTokenStorage;
     private final FwUserBizService fwUserBizService;
 
@@ -60,13 +55,13 @@ public class FwJwtKitService {
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ) {
-        return buildToken(extraClaims, userDetails, jwtLifeMinutes);
+        return buildToken(extraClaims, userDetails, fwSecurityProperties.getJwt().getTokenLifeMinutes());
     }
 
     public String generateRefreshToken(
             UserDetails userDetails
     ) {
-        return buildToken(new HashMap<>(), userDetails, jwtRefreshLifeMinutes);
+        return buildToken(new HashMap<>(), userDetails, fwSecurityProperties.getJwt().getRefreshTokenLifeMinutes());
     }
 
     private String buildToken(
@@ -113,7 +108,7 @@ public class FwJwtKitService {
     }
 
     private SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(fwSecurityProperties.getJwt().getSecretKey()));
     }
 
     public static void main(String[] args) {

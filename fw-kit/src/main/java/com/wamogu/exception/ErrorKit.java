@@ -54,7 +54,7 @@ public interface ErrorKit {
      * 业务异常，如封号、操作不存在的资源等
      */
     @ExceptionMapper(code = CODE_NOT_FOUND, msg = "业务异常", msgReplaceable = true)
-    final class BizError extends RuntimeException {
+    final class BizError extends RuntimeException{
         public BizError(String msg) {
             super(msg);
         }

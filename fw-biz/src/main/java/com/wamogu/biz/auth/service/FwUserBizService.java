@@ -29,6 +29,7 @@ public final class FwUserBizService extends BaseBizService<User, FwUserDto, FwUs
     private final UserRepository baseRepository;
     private final FwRoleBizService fwRoleBizService;
 
+    // Cached
     public Optional<FwUserDto> findByAvailableUsername(String username) {
         FwUserDto ret = baseCastor.do2dto(baseRepository.lambdaQuery()
                 .eq(User::getUsername, username)
@@ -37,11 +38,12 @@ public final class FwUserBizService extends BaseBizService<User, FwUserDto, FwUs
         return Optional.ofNullable(ret);
     }
 
+    // Cached
     public Set<String> getAuthorities(FwUserDto user) {
         Set<String> result = new HashSet<>();
 
         Optional.ofNullable(user.getPrivileges()).ifPresent(result::addAll);
-        Optional.ofNullable(user.getPrivileges()).ifPresent(roles -> {
+        Optional.ofNullable(user.getRoles()).ifPresent(roles -> {
             result.addAll(roles);
             fwRoleBizService.findByKeys(roles)
                     .stream().map(FwRoleDto::getPrivileges)

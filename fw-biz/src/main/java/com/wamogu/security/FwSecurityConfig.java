@@ -39,9 +39,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class FwSecurityConfig {
-
-    private final FwSecuritySetting fwSecuritySetting;
-
+    private final FwSecurityProperties fwSecurityProperties;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
     private final GrGlobalExceptionAdvice grGlobalExceptionAdvice;
@@ -76,9 +74,9 @@ public class FwSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         List<String> ignoreUrls = new ArrayList<>();
-        Optional.ofNullable(fwSecuritySetting.getUrlWhiteList()).ifPresent(ignoreUrls::addAll);
+        Optional.ofNullable(fwSecurityProperties.getUrlWhiteList()).ifPresent(ignoreUrls::addAll);
         Optional.ofNullable(fwAnonymousAccessAware.getUrlWhiteList()).ifPresent(ignoreUrls::addAll);
-        log.info(">>>> 配置白名单: \n" + StrUtil.join("\n", fwSecuritySetting.getUrlWhiteList()));
+        log.info(">>>> 配置白名单: \n" + StrUtil.join("\n", fwSecurityProperties.getUrlWhiteList()));
         log.info(">>>> 注解白名单: \n" + StrUtil.join("\n", fwAnonymousAccessAware.getUrlWhiteList()));
 
         return web -> ignoreUrls.forEach(x -> {

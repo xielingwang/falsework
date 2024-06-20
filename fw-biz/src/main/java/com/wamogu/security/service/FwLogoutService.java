@@ -1,5 +1,6 @@
 package com.wamogu.security.service;
 
+import com.wamogu.security.constants.FwTokenType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +27,10 @@ public class FwLogoutService implements LogoutHandler {
         ) {
             final String authHeader = request.getHeader("Authorization");
             final String jwt;
-            if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+            if (authHeader == null ||!authHeader.startsWith(FwTokenType.BEARER_ST)) {
                 return;
             }
-            jwt = authHeader.substring(7);
+            jwt = authHeader.substring(FwTokenType.BEARER_ST.length());
             var storedToken = fwTokenStorage.findByToken(jwt)
                     .orElse(null);
             if (storedToken != null) {

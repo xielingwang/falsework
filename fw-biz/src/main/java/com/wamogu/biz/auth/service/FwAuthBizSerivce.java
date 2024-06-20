@@ -7,18 +7,17 @@ import com.wamogu.entity.auth.User;
 import com.wamogu.security.model.FwPwdLoginQuery;
 import com.wamogu.security.model.FwPwdRegQuery;
 import com.wamogu.security.model.FwTokenVo;
-import com.wamogu.security.model.FwUserDetails;
 import com.wamogu.security.service.FwJwtKitService;
+import com.wamogu.security.service.FwLogoutService;
 import com.wamogu.security.service.FwTokenStorage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 /**
  * @Author Armin
@@ -71,14 +70,5 @@ public class FwAuthBizSerivce {
         // 根据用户信息查询用户,如果用户不存在抛出异常
         FwUserDto userDto = fwUserBizService.findByAvailableUsername(username).orElseThrow();
         return fwJwtKitService.generateTokenForRefresh(userDto, refreshToken);
-    }
-
-    public void logout(String authHeader) {
-        // 从鉴权信息中获取RefreshToken
-        final String token = fwJwtKitService.extractTokenFromHeader(authHeader);
-        if(StrUtil.isBlank(token)) {
-            return;
-        }
-        fwTokenStorage.expire(token);
     }
 }

@@ -6,12 +6,17 @@ import com.wamogu.security.model.FwPwdLoginQuery;
 import com.wamogu.security.model.FwPwdRegQuery;
 import com.wamogu.security.model.FwTokenVo;
 import com.wamogu.security.service.FwJwtKitService;
+import com.wamogu.security.service.FwLogoutService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -28,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class FwAuthController {
     private final FwAuthBizSerivce fwAuthBizSerivce;
+    private final FwLogoutService fwLogoutService;
 
     @PostMapping("/pwdRegister")
     @Operation(summary = "用户密码注册")
@@ -56,7 +62,8 @@ public class FwAuthController {
     @PostMapping("/logout")
     @Operation(summary = "token 登出")
     @ApiResponse(responseCode = "200", description = "登出成功")
-    public void logout(@RequestHeader("Authorization") String authHeader) {
-        fwAuthBizSerivce.logout(authHeader);
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        fwLogoutService.logout(request, response, securityContext.getAuthentication());
     }
 }
