@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.handler.typehandler;
 
 import com.baomidou.mybatisplus.core.toolkit.Assert;
@@ -11,14 +15,14 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wamogu.enums.UserIdentifyType;
 import com.wamogu.kit.FwJsonUtils;
 import com.wamogu.po.BaseUserIdentify;
+import java.lang.reflect.Field;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedJdbcTypes;
 import org.apache.ibatis.type.MappedTypes;
 
-import java.lang.reflect.Field;
-
 /**
  * @Author Armin
+ *
  * @date 24-06-12 14:10
  */
 @MappedTypes({Object.class})

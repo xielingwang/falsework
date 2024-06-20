@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.kit;
 
 import cn.hutool.core.date.DatePattern;
@@ -5,23 +9,22 @@ import cn.hutool.core.text.CharSequenceUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.wamogu.config.DateConfig;
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.TimeZone;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Author Armin
+ *
  * @date 24-06-04 09:37
  */
 @Slf4j
 @UtilityClass
 public class FwJsonUtils {
+
     private static ObjectMapper mapper = new ObjectMapper();
 
     static {

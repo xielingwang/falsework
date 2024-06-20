@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.security.service;
 
 import cn.hutool.core.codec.Base64Encoder;
@@ -15,28 +19,29 @@ import com.wamogu.security.model.FwUserDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import javax.crypto.SecretKey;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 /**
  * @Author Armin
+ *
  * @date 24-06-13 11:45
  */
 @Service
 @RequiredArgsConstructor
 public class FwJwtKitService {
+
     private final FwSecurityProperties fwSecurityProperties;
+
     private final FwTokenStorage fwTokenStorage;
+
     private final FwUserBizService fwUserBizService;
 
     public String extractUsername(String token) {
@@ -51,26 +56,18 @@ public class FwJwtKitService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String generateToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails
-    ) {
-        return buildToken(extraClaims, userDetails, fwSecurityProperties.getJwt().getTokenLifeMinutes());
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return buildToken(
+                extraClaims, userDetails, fwSecurityProperties.getJwt().getTokenLifeMinutes());
     }
 
-    public String generateRefreshToken(
-            UserDetails userDetails
-    ) {
-        return buildToken(new HashMap<>(), userDetails, fwSecurityProperties.getJwt().getRefreshTokenLifeMinutes());
+    public String generateRefreshToken(UserDetails userDetails) {
+        return buildToken(
+                new HashMap<>(), userDetails, fwSecurityProperties.getJwt().getRefreshTokenLifeMinutes());
     }
 
-    private String buildToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails,
-            long lifeMinutes
-    ) {
-        return Jwts
-                .builder()
+    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long lifeMinutes) {
+        return Jwts.builder()
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(DateTime.now())
@@ -94,21 +91,18 @@ public class FwJwtKitService {
 
     private Claims extractAllClaims(String token) {
         try {
-            JwtParser parser = Jwts
-                    .parser()
-                    .verifyWith(getSecretKey())
-                    .build();
-            return parser.parseSignedClaims(token)
-                    .getPayload();
+            JwtParser parser = Jwts.parser().verifyWith(getSecretKey()).build();
+            return parser.parseSignedClaims(token).getPayload();
         } catch (JwtException e) {
-            throw  new ErrorKit.Forbidden("token 已失效", e);
+            throw new ErrorKit.Forbidden("token 已失效", e);
         } catch (Exception e) {
             throw new ErrorKit.Forbidden("token 相关的未知错误", e);
         }
     }
 
     private SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(fwSecurityProperties.getJwt().getSecretKey()));
+        return Keys.hmacShaKeyFor(
+                Decoders.BASE64.decode(fwSecurityProperties.getJwt().getSecretKey()));
     }
 
     public static void main(String[] args) {
@@ -139,6 +133,7 @@ public class FwJwtKitService {
     public FwTokenVo generateTokenForLogin(FwUserDto userDto) {
         return generateTokenForRefresh(userDto, null);
     }
+
     public FwTokenVo generateTokenForRefresh(FwUserDto userDto, String refreshToken) {
         FwUserDetails userDetails = FwUserDetails.valueOf(userDto, fwUserBizService.getAuthorities(userDto));
 
@@ -157,7 +152,8 @@ public class FwJwtKitService {
         // 产生新 token
         String jwtToken = generateToken(userDetails);
         fwTokenStorage.saveToken(userDto, jwtToken);
-        return FwTokenVo.builder().token(jwtToken)
+        return FwTokenVo.builder()
+                .token(jwtToken)
                 .refreshToken(refreshToken)
                 .currentTime(LocalDateTime.now())
                 .build();

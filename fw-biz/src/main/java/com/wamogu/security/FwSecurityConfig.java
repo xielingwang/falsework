@@ -1,4 +1,10 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.security;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import cn.hutool.core.util.StrUtil;
 import com.feiniaojin.gracefulresponse.advice.GrGlobalExceptionAdvice;
@@ -6,6 +12,9 @@ import com.wamogu.security.annotation.FwAnonymousAccessAware;
 import com.wamogu.security.filter.FwJwtAuthFilter;
 import com.wamogu.security.service.FwJwtKitService;
 import com.wamogu.security.service.FwTokenStorage;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -23,14 +32,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-
 /**
  * @Author Armin
+ *
  * @date 24-06-12 23:38
  */
 @Slf4j
@@ -39,34 +43,39 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class FwSecurityConfig {
+
     private final FwSecurityProperties fwSecurityProperties;
+
     private final AuthenticationProvider authenticationProvider;
+
     private final LogoutHandler logoutHandler;
+
     private final GrGlobalExceptionAdvice grGlobalExceptionAdvice;
+
     private final FwJwtKitService fwJwtKitService;
+
     private final UserDetailsService userDetailsService;
+
     private final FwTokenStorage fwTokenStorage;
+
     private final FwAnonymousAccessAware fwAnonymousAccessAware;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.info(">>>> 安全策略启动 <<<<");
 
-        FwJwtAuthFilter fwJwtAuthFilter = new FwJwtAuthFilter(
-                grGlobalExceptionAdvice, fwJwtKitService, userDetailsService, fwTokenStorage
-        );
+        FwJwtAuthFilter fwJwtAuthFilter =
+                new FwJwtAuthFilter(grGlobalExceptionAdvice, fwJwtKitService, userDetailsService, fwTokenStorage);
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req.anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(fwJwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout(logout ->
-                        logout.logoutUrl("/auth/logout")
-                                .addLogoutHandler(logoutHandler)
-                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-                )
-        ;
+                .logout(logout -> logout.logoutUrl("/auth/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler(
+                                (request, response, authentication) -> SecurityContextHolder.clearContext()));
 
         return http.build();
     }

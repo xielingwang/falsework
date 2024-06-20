@@ -19,7 +19,7 @@
 
 ### 数据库处理
 
-- [x] 引入 mybatis-plus-ext 
+- [x] 引入 mybatis-plus-ext
 - [x] 自动建表
 - [x] 自动 Mapper 和 Repository
 - [ ] 分页
@@ -73,7 +73,7 @@
 - [ ] 加密
 - [ ] ip白名单
 - [ ] 限流
-- [ ] 参数校验
+- [x] 参数校验
 - [ ] 请求日志
 - [ ] 幂等设计
 - [ ] 限制记录条数
@@ -116,20 +116,30 @@
 
 ### 开发
 
-- [x] maven 配置
+#### gradle
+
 - [ ] gradle 配置
-- [ ] 引入 spoon，重复代码生成 // 待定
+
+#### maven
+
+- [x] maven 配置
+- [x] maven-优先使用国内镜像仓库
+- [x] maven 引入和配置 spotless 插件
+- [x] `dao`、`kit`、`biz` 模块化
+
+#### 其他
+
 - [x] 引入 JavaPoet，重复代码生成
+- [ ] 引入 spoon，重复代码生成 // 待定
 - [ ] JavaPoet 生成代码优化
   - [ ] 注解配置 / 配置文件
   - [ ] 存在不重复生成
-- [x] `dao`、`kit`、`biz` 模块化
-- [x] 优先使用国内镜像仓库
 
 ### 部署
 
-## 前端 
+## 前端
 
 ### 接口
 
 - [ ] https://github.com/reeli/ts-codegen
+

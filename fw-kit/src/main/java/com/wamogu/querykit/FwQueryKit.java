@@ -1,4 +1,10 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.querykit;
+
+import static com.wamogu.querykit.FwQueryKit.FlagEnum.*;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
@@ -9,33 +15,31 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wamogu.exception.ErrorKit;
 import com.wamogu.querykit.anno.FwQuery;
 import com.wamogu.querykit.anno.MbpEditIgnore;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.beans.BeanUtils;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-
-import static com.wamogu.querykit.FwQueryKit.FlagEnum.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.springframework.beans.BeanUtils;
 
 /**
- * mybatis plus工具类
- * 查询条件多的时候一个一个写好麻烦, 这个工具类可以根据注解自动构建查询条件并完成分页查询
+ * mybatis plus工具类 查询条件多的时候一个一个写好麻烦, 这个工具类可以根据注解自动构建查询条件并完成分页查询 @Author Armin
  *
- * @Author Armin
  * @date 24-05-28 21:19
  */
 public class FwQueryKit {
 
     protected enum FlagEnum {
-        BetweenMax("Max"), BetweenMin("Min")
-        , SortAsc("+"), SortDesc("-");
+        BetweenMax("Max"),
+        BetweenMin("Min"),
+        SortAsc("+"),
+        SortDesc("-");
 
         private final String suffix;
+
         public String suffix() {
             return suffix;
         }
@@ -44,34 +48,31 @@ public class FwQueryKit {
             this.suffix = suffix;
         }
     }
-    /**
-     * id字段名
-     */
+
+    /** id字段名 */
     private static final String idFieldName = "id";
-    /**
-     * 排序列名
-     */
+
+    /** 排序列名 */
     public static final String orderByFieldName = "orderBy";
-    /**
-     * 排序方向
-     */
+
+    /** 排序方向 */
     public static final String sortDirection = "sortDirection";
-    /**
-     * 排序列排序方式
-     */
+
+    /** 排序列排序方式 */
     private static final char orderBySeparator = ',';
 
     /**
      * 用于快速构建检索条件
      *
-     * @param service   service对象
-     * @param query     检索条件, query对象
+     * @param service service对象
+     * @param query 检索条件, query对象
      * @param autoOrder 是否自动排序, 为true将取请求行中的排序参数进行排序
-     * @param <M>       mapper interface
-     * @param <T>       实体类
+     * @param <M> mapper interface
+     * @param <T> 实体类
      * @return 构建完成的检索条件
      */
-    public static <M extends BaseMapper<T>, T> LambdaQueryChainWrapper<T> buildSearch(IService<T> service, FwQueryBase query, boolean autoOrder) {
+    public static <M extends BaseMapper<T>, T> LambdaQueryChainWrapper<T> buildSearch(
+            IService<T> service, FwQueryBase query, boolean autoOrder) {
         LambdaQueryChainWrapper<T> result = service.lambdaQuery();
         HashMap<Field, Object> fieldValueMap = new HashMap<>(8);
 
@@ -121,7 +122,8 @@ public class FwQueryKit {
                 String fieldName = StringUtils.removeEnd(field.getName(), BetweenMin.suffix());
                 String maxFieldName = fieldName + BetweenMax.suffix();
                 Optional<Field> maxFieldOptional = betweenFieldValueMap.keySet().stream()
-                        .filter(it -> it.getName().contentEquals(maxFieldName)).findFirst();
+                        .filter(it -> it.getName().contentEquals(maxFieldName))
+                        .findFirst();
                 if (maxFieldOptional.isEmpty()) {
                     return;
                 }
@@ -145,17 +147,18 @@ public class FwQueryKit {
             if (StringUtils.isEmpty(query.getOrderBy())) {
                 break;
             }
-            Arrays.stream(StringUtils.split(query.getOrderBy(), orderBySeparator)).forEach(sortByCol -> {
-                boolean isAsc = true;
-                if (sortByCol.endsWith(SortAsc.suffix())) {
-                    isAsc = true;
-                    sortByCol = StringUtils.removeEnd(sortByCol, SortAsc.suffix());
-                } else if (sortByCol.endsWith(SortDesc.suffix())) {
-                    isAsc = false;
-                    sortByCol = StringUtils.removeEnd(sortByCol, SortDesc.suffix());
-                }
-                result.orderBy(true, isAsc, nameMask.apply(sortByCol));
-            });
+            Arrays.stream(StringUtils.split(query.getOrderBy(), orderBySeparator))
+                    .forEach(sortByCol -> {
+                        boolean isAsc = true;
+                        if (sortByCol.endsWith(SortAsc.suffix())) {
+                            isAsc = true;
+                            sortByCol = StringUtils.removeEnd(sortByCol, SortAsc.suffix());
+                        } else if (sortByCol.endsWith(SortDesc.suffix())) {
+                            isAsc = false;
+                            sortByCol = StringUtils.removeEnd(sortByCol, SortDesc.suffix());
+                        }
+                        result.orderBy(true, isAsc, nameMask.apply(sortByCol));
+                    });
         } while (false);
 
         return result;
@@ -165,39 +168,38 @@ public class FwQueryKit {
      * 用于快速构建检索条件, 自动排序
      *
      * @param service service对象
-     * @param query   检索条件, query对象
-     * @param <M>     mapper interface
-     * @param <T>     实体类
+     * @param query 检索条件, query对象
+     * @param <M> mapper interface
+     * @param <T> 实体类
      * @return 构建完成的检索条件
      */
-    public static <M extends BaseMapper<T>, T> LambdaQueryChainWrapper<T> buildSearch(IService<T> service, FwQueryBase query) {
+    public static <M extends BaseMapper<T>, T> LambdaQueryChainWrapper<T> buildSearch(
+            IService<T> service, FwQueryBase query) {
         return buildSearch(service, query, true);
     }
-
 
     /**
      * 快速构建检索条件并分页
      *
-     * @param service   service对象
-     * @param query     检索条件, query对象
+     * @param service service对象
+     * @param query 检索条件, query对象
      * @param autoOrder 是否自动排序
-     * @param <M>       mapper interface
-     * @param <T>       实体类
+     * @param <M> mapper interface
+     * @param <T> 实体类
      * @return 分页结果
      */
     public static <M extends BaseMapper<T>, T> Page<T> page(IService<T> service, FwQueryBase query, boolean autoOrder) {
         Page<T> page = query.getPage(service.getEntityClass());
-        return buildSearch(service, query, autoOrder)
-                .page(page);
+        return buildSearch(service, query, autoOrder).page(page);
     }
 
     /**
      * 快速构建检索条件并分页, 自动排序
      *
      * @param service service对象
-     * @param query   检索条件, query对象
-     * @param <M>     mapper interface
-     * @param <T>     实体类
+     * @param query 检索条件, query对象
+     * @param <M> mapper interface
+     * @param <T> 实体类
      * @return 分页结果
      */
     public static <M extends BaseMapper<T>, T> Page<T> page(IService<T> service, FwQueryBase query) {

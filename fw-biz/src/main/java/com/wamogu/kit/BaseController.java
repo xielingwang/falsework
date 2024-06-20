@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.kit;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -7,21 +11,22 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import java.io.Serializable;
+import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.Serializable;
-import java.util.List;
-
 /**
  * @Author Armin
+ *
  * @date 24-05-29 14:52
  */
 @Slf4j
 @Getter
 public abstract class BaseController<DO, DTO, VO, QO extends FwQueryBase, PK extends Serializable> {
+
     protected BaseBizService<DO, DTO, VO, PK> bizService;
 
     @Resource
@@ -44,7 +49,7 @@ public abstract class BaseController<DO, DTO, VO, QO extends FwQueryBase, PK ext
 
     @GetMapping("/crud/page")
     @Operation(summary = "获取Item翻页列表")
-    public IPage<VO> getPage(@Valid @ParameterObject  QO query) {
+    public IPage<VO> getPage(@Valid @ParameterObject QO query) {
         fss.checkHasPrivilege(getBizService().getClazzDO(), "get");
         return getBizService().getPage(query);
     }

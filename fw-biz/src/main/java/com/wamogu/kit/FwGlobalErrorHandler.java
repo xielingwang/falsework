@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.kit;
 
 import com.feiniaojin.gracefulresponse.advice.GrGlobalExceptionAdvice;
@@ -5,10 +9,7 @@ import com.feiniaojin.gracefulresponse.api.ResponseFactory;
 import com.feiniaojin.gracefulresponse.api.ResponseStatusFactory;
 import com.feiniaojin.gracefulresponse.data.Response;
 import com.feiniaojin.gracefulresponse.data.ResponseStatus;
-import com.feiniaojin.gracefulresponse.defaults.DefaultResponseImplStyle0;
-import com.feiniaojin.gracefulresponse.defaults.DefaultResponseStatus;
 import com.wamogu.exception.ErrorKit;
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * @Author Armin
+ *
  * @date 24-06-18 14:29
  */
 @ControllerAdvice
@@ -27,8 +29,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RequiredArgsConstructor
 public class FwGlobalErrorHandler {
+
     private final GrGlobalExceptionAdvice grGlobalExceptionAdvice;
+
     private final ResponseStatusFactory responseStatusFactory;
+
     private final ResponseFactory responseFactory;
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -41,7 +46,5 @@ public class FwGlobalErrorHandler {
     public Response handle(Throwable ex) {
         log.error("异常错误", ex);
         return grGlobalExceptionAdvice.exceptionHandler(ex);
-        // ResponseStatus rs = responseStatusFactory.newInstance(ErrorKit.CODE_FATAL, "异常错误");
-        // return responseFactory.newInstance(rs);
     }
 }

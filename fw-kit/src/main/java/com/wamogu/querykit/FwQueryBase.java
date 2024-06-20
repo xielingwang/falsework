@@ -1,20 +1,25 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.querykit;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
 import java.util.Optional;
+import lombok.Data;
 
 /**
  * @Author Armin
+ *
  * @date 24-05-29 17:14
  */
 @Data
 @Schema
 public abstract class FwQueryBase {
+
     public static final Integer DEFAULT_PAGE_NUM = 1;
+
     public static final Integer DEFAULT_PAGE_SIZE = 20;
 
     @Schema(description = "页码")
@@ -33,8 +38,6 @@ public abstract class FwQueryBase {
     }
 
     public static <E> Page<E> getDefaultPage(Class<E> clazz) {
-        return new Page<E>()
-                .setCurrent(DEFAULT_PAGE_NUM)
-                .setSize(DEFAULT_PAGE_SIZE);
+        return new Page<E>().setCurrent(DEFAULT_PAGE_NUM).setSize(DEFAULT_PAGE_SIZE);
     }
 }

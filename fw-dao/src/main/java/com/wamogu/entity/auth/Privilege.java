@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.entity.auth;
 
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -13,6 +17,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * @Author Armin
+ *
  * @date 24-06-12 17:11
  */
 @EqualsAndHashCode(callSuper = true)
@@ -22,10 +27,13 @@ import lombok.EqualsAndHashCode;
 @AutoDefine
 @AutoRepository
 public class Privilege extends ImmutableEnity {
+
     @Column(comment = "权限项")
     private String privilegeKey;
+
     @Column(comment = "权限项")
     private String privilegeGroup;
+
     @Column(comment = "权限说明")
     @TableField(typeHandler = JacksonTypeHandler.class)
     private String privilegeRemark;

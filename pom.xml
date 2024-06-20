@@ -23,37 +23,45 @@
         <module>fw-util-codegen</module>
     </modules>
     <properties>
+        <google-java-format.version>1.19.2</google-java-format.version>
+        <graceful-response.version>4.0.1-boot3</graceful-response.version>
+        <hutool.version>5.8.28</hutool.version>
         <java.version>17</java.version>
+        <jwt.version>0.12.5</jwt.version>
+        <knife4j.version>4.5.0</knife4j.version>
+        <lombok.version>1.18.32</lombok.version>
+        <mapstruct.version>1.6.0.Beta2</mapstruct.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mybatis-test.version>3.0.3</mybatis-test.version>
-        <graceful-response.version>4.0.1-boot3</graceful-response.version>
-        <knife4j.version>4.5.0</knife4j.version>
-        <spring-mpe.version>3.5.6-EXT683</spring-mpe.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
-        <mapstruct.version>1.6.0.Beta2</mapstruct.version>
-        <lombok.version>1.18.32</lombok.version>
-        <hutool.version>5.8.28</hutool.version>
-        <jwt.version>0.12.5</jwt.version>
+        <spring-mpe.version>3.5.6-EXT683</spring-mpe.version>
     </properties>
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-        <repository>
-            <id>alimaven</id>
-            <name>aliyun maven</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis-spring</artifactId>
+                <version>3.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-bom</artifactId>
+                <version>${hutool.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
 
         <!--
@@ -180,28 +188,121 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mybatis</groupId>
-                <artifactId>mybatis-spring</artifactId>
-                <version>3.0.3</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-bom</artifactId>
-                <version>${hutool.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>alimaven</id>
+            <name>aliyun maven</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless-maven-plugin.version}</version>
+                <configuration>
+                    <markdown>
+                        <includes>
+                            <!-- You have to set the target manually -->
+                            <include>**/*.md</include>
+                            <include>**/*.markdown</include>
+                        </includes>
+
+                        <flexmark/>
+                        <!-- has its own section below -->
+                    </markdown>
+                    <java>
+                        <!-- Cleanthat will refactor your code, but it may break your style: apply it before your formatter -->
+                        <cleanthat/>
+
+                        <!-- https://github.com/google/google-java-format -->
+                        <!--
+                        <googleJavaFormat>
+                            <version>${google-java-format.version}</version>
+                            <style>GOOGLE</style>
+                            <reflowLongStrings>true</reflowLongStrings>
+                        </googleJavaFormat>
+                        -->
+                        <palantirJavaFormat>
+                            <version>2.47.0</version>
+                            <!-- optional -->
+                            <style>PALANTIR</style>
+                            <!-- or AOSP/GOOGLE (optional) -->
+                            <formatJavadoc>false</formatJavadoc>
+                            <!-- defaults to false (optional, requires at least Palantir 2.39.0) -->
+                        </palantirJavaFormat>
+                        <indent>
+                            <spaces>true</spaces>
+                            <spacesPerTab>4</spacesPerTab>
+                        </indent>
+
+                        <!-- standard import order -->
+                        <importOrder/>
+                        <!-- Removing unused imports at the top of each file. -->
+                        <removeUnusedImports/>
+                        <!-- Fixes formatting of type annotations that may have occurred earlier in the formatting process. -->
+                        <formatAnnotations/>
+                        <licenseHeader>
+                            <file>dev-support/license-header</file>
+                        </licenseHeader>
+                    </java>
+
+                    <pom>
+                        <!-- These are the defaults, you can override if you want -->
+                        <includes>
+                            <include>pom.xml</include>
+                        </includes>
+
+                        <sortPom>
+                            <!-- The encoding of the pom files -->
+                            <encoding>UTF-8</encoding>
+                            <!-- Should empty elements be expanded-->
+                            <expandEmptyElements>false</expandEmptyElements>
+                            <!-- Should a space be added inside self-closing elements-->
+                            <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement>
+                            <!-- Keep empty lines -->
+                            <keepBlankLines>true</keepBlankLines>
+                            <!-- Indentation -->
+                            <nrOfIndentSpace>4</nrOfIndentSpace>
+                            <!-- Should empty lines be indented -->
+                            <indentBlankLines>false</indentBlankLines>
+                            <!-- Should schema locations be indented -->
+                            <indentSchemaLocation>true</indentSchemaLocation>
+                            <!--
+                            Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles
+                            recommended_2008_06 - The POM Code Convention that was chosen by Maven developers in 2008 (default for 3.0.0+)
+                            -->
+                            <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+                            <!-- Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+                            <sortDependencyExclusions/>
+                            <!-- Sort properties -->
+                            <sortProperties>true</sortProperties>
+                            <!-- Sort plugin executions -->
+                            <sortExecutions>false</sortExecutions>
+                        </sortPom>
+                    </pom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -6,11 +10,9 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @Author Armin
+ *
  * @date 24-05-28 22:14
  */
 @Configuration
 @OpenAPIDefinition(info = @Info(title = "Falsework api 文档", version = "1.0", description = "Falsework api 文档 v1.0"))
-public class Swagger3Configuration {
-
-}
-
+public class Swagger3Configuration {}

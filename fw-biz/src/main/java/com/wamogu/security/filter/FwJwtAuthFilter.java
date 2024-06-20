@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.security.filter;
 
 import cn.hutool.core.io.IoUtil;
@@ -13,6 +17,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -24,10 +29,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-
 /**
  * @Author Armin
+ *
  * @date 24-06-13 11:45
  */
 // @Component
@@ -35,29 +39,33 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class FwJwtAuthFilter extends OncePerRequestFilter {
 
-    /**
-     * 白名单路径
-     */
+    /** 白名单路径 */
     public static final String[] WHITE_LIST_URL = {
-            // springfox
-            "/doc.html",
-            "/webjars/js/**",
-            "/webjars/css/**",
-            "/v3/api-docs/**",
-            "/gtd_todo_item/**",
-            // auth
-            "/auth/**",
-            "/demo/**",
+        // springfox
+        "/doc.html",
+        "/webjars/js/**",
+        "/webjars/css/**",
+        "/v3/api-docs/**",
+        "/gtd_todo_item/**",
+        // auth
+        "/auth/**",
+        "/demo/**",
     };
 
     private final GrGlobalExceptionAdvice grGlobalExceptionAdvice;
+
     private final FwJwtKitService fwJwtKitService;
+
     private final UserDetailsService userDetailsService;
+
     private final FwTokenStorage fwTokenStorage;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
         try {
             final String authHeader = request.getHeader("Authorization");
             if (authHeader == null || !authHeader.startsWith(FwTokenType.BEARER_ST)) {
@@ -73,7 +81,8 @@ public class FwJwtAuthFilter extends OncePerRequestFilter {
 
             // 检查 token 有效性
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            var isTokenValid = fwTokenStorage.findByToken(jwt)
+            var isTokenValid = fwTokenStorage
+                    .findByToken(jwt)
                     .map(t -> !t.isExpired() && !t.isRevoked())
                     .orElse(false);
             if (!fwJwtKitService.isTokenValid(jwt, userDetails) || !isTokenValid) {
@@ -81,23 +90,15 @@ public class FwJwtAuthFilter extends OncePerRequestFilter {
             }
 
             // 正常流程
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-            );
-            authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
             filterChain.doFilter(request, response);
-        }
-
-        catch (Exception ex) {
+        } catch (Exception ex) {
             Response resp = grGlobalExceptionAdvice.exceptionHandler(ex);
             response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
             IoUtil.writeUtf8(response.getOutputStream(), true, FwJsonUtils.bean2json(resp));
         }
-
     }
 }

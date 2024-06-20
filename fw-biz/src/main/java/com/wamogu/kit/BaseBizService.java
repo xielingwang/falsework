@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.kit;
 
 import cn.hutool.core.util.ReflectUtil;
@@ -9,32 +13,34 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.wamogu.exception.ErrorKit;
 import com.wamogu.querykit.FwQueryBase;
 import com.wamogu.querykit.FwQueryKit;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.checkerframework.checker.units.qual.C;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * @Author Armin
+ *
  * @datDO 24-05-29 14:52
  */
 @Getter
 @AllArgsConstructor
 public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
+
     @Getter
     protected IService<DO> baseRepository;
+
     @Getter
     protected BaseCastor<DO, DTO, VO> baseCastor;
 
-
     private Class<DO> clazzDO;
+
     private Class<DTO> clazzDTO;
+
     private Class<VO> clazzVO;
 
     public BaseBizService() {
@@ -62,6 +68,7 @@ public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
         getBaseRepository().updateById(itemDo);
         return getBaseCastor().do2vo(itemDo);
     }
+
     public List<VO> updateList(List<DTO> itemDtos) {
         List<DO> itemDos = itemDtos.stream().map(x -> getBaseCastor().dto2do(x)).toList();
         getBaseRepository().updateBatchById(itemDos);
@@ -79,9 +86,11 @@ public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
                 .filter(x -> x.getAnnotation(TableId.class) != null)
                 .findFirst();
         if (pkField.isEmpty()) {
-            throw new ErrorKit.Fatal(String.format("系统异常：类 %s 未定义 @TableId", itemDo.getClass().getSimpleName()) );
+            throw new ErrorKit.Fatal(
+                    String.format("系统异常：类 %s 未定义 @TableId", itemDo.getClass().getSimpleName()));
         }
-        ReflectUtil.setFieldValue(itemDo, pkField.get(), id);;
+        ReflectUtil.setFieldValue(itemDo, pkField.get(), id);
+        ;
     }
 
     private void getPriKeyValue(DO itemDo) {
@@ -89,7 +98,8 @@ public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
                 .filter(x -> x.getAnnotation(TableId.class) != null)
                 .findFirst();
         if (pkField.isEmpty()) {
-            throw new ErrorKit.Fatal(String.format("系统异常：类 %s 未定义 @TableId", itemDo.getClass().getSimpleName()) );
+            throw new ErrorKit.Fatal(
+                    String.format("系统异常：类 %s 未定义 @TableId", itemDo.getClass().getSimpleName()));
         }
         ReflectUtil.getFieldValue(itemDo, pkField.get());
     }
@@ -97,9 +107,10 @@ public abstract class BaseBizService<DO, DTO, VO, PK extends Serializable> {
     public List<VO> getAll(FwQueryBase baseQuery) {
         LambdaQueryChainWrapper<DO> qw = baseQuery != null
                 ? FwQueryKit.buildSearch(getBaseRepository(), baseQuery)
-                : getBaseRepository().lambdaQuery() ;
+                : getBaseRepository().lambdaQuery();
         return getBaseCastor().dos2vos(qw.list());
     }
+
     public List<VO> getAll() {
         return getAll(null);
     }

@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.event.listener;
 
 import com.wamogu.biz.auth.pojo.FwPrivilegeDto;
@@ -6,6 +10,10 @@ import com.wamogu.biz.auth.pojo.FwUserDto;
 import com.wamogu.biz.auth.service.FwPrivilegeBizService;
 import com.wamogu.biz.auth.service.FwRoleBizService;
 import com.wamogu.biz.auth.service.FwUserBizService;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
@@ -13,19 +21,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
  * @Author Armin
+ *
  * @date 24-06-12 18:12
  */
 @Component
 @RequiredArgsConstructor
-public class FwContextRefreshEventListner implements
-        ApplicationListener<ApplicationStartedEvent> {
+public class FwContextRefreshEventListner implements ApplicationListener<ApplicationStartedEvent> {
 
     boolean alreadySetup = false;
 
@@ -41,14 +44,12 @@ public class FwContextRefreshEventListner implements
     public void onApplicationEvent(ApplicationStartedEvent event) {
 
         alreadySetup = userBizService.findByAvailableUsername("fwadmin").orElse(null) != null;
-        if (alreadySetup)
-            return;
+        if (alreadySetup) return;
 
         FwPrivilegeDto readPrivilege = createPrivilegeIfNotFound("PRIV_READ");
         FwPrivilegeDto writePrivilege = createPrivilegeIfNotFound("PRIV_WRITE");
 
-        List<FwPrivilegeDto> adminPrivileges = List.of(
-                readPrivilege, writePrivilege);
+        List<FwPrivilegeDto> adminPrivileges = List.of(readPrivilege, writePrivilege);
         createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
         createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege));
 
@@ -76,22 +77,22 @@ public class FwContextRefreshEventListner implements
         if (dto == null) {
             dto = new FwPrivilegeDto();
             dto.setPrivilegeKey(privKey);
-            dto.setPrivilegeRemark(privKey+"说明");
+            dto.setPrivilegeRemark(privKey + "说明");
             privilegeBizService.createOne(dto);
         }
         return dto;
     }
 
     @Transactional
-    public FwRoleDto createRoleIfNotFound(
-            String roleKey, List<FwPrivilegeDto> privileges) {
+    public FwRoleDto createRoleIfNotFound(String roleKey, List<FwPrivilegeDto> privileges) {
 
         FwRoleDto role = roleBizService.findByKey(roleKey);
         if (role == null) {
             role = new FwRoleDto();
             role.setRoleKey(roleKey);
-            role.setRoleRemark(roleKey+"说明");
-            role.setPrivileges(privileges.stream().map(FwPrivilegeDto::getPrivilegeKey).collect(Collectors.toSet()));
+            role.setRoleRemark(roleKey + "说明");
+            role.setPrivileges(
+                    privileges.stream().map(FwPrivilegeDto::getPrivilegeKey).collect(Collectors.toSet()));
             roleBizService.createOne(role);
         }
         return role;

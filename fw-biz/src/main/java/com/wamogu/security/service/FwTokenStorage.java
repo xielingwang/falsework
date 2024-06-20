@@ -1,16 +1,19 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.security.service;
 
 import com.wamogu.biz.auth.pojo.FwUserDto;
-import lombok.AllArgsConstructor;
+import java.beans.ConstructorProperties;
+import java.util.Optional;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.beans.ConstructorProperties;
-import java.util.Optional;
-
 /**
  * @Author Armin
+ *
  * @date 24-06-14 15:18
  */
 public interface FwTokenStorage {
@@ -27,10 +30,15 @@ public interface FwTokenStorage {
     @Getter
     @Builder
     class FwToken {
+
         private String token;
+
         private Integer uid;
+
         private boolean expired;
+
         private boolean revoked;
+
         private String tokenType;
 
         @ConstructorProperties({"token", "uid", "expired", "revoked", "tokenType"})

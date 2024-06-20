@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.security;
 
 import com.wamogu.biz.auth.service.FwUserBizService;
@@ -17,17 +21,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * @Author Armin
+ *
  * @date 24-06-17 12:44
  */
 @Configuration
 @RequiredArgsConstructor
 public class FwBasicConfig {
+
     private final FwUserBizService fwUserBizService;
 
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
-            val userDto = fwUserBizService.findByAvailableUsername(username)
+            val userDto = fwUserBizService
+                    .findByAvailableUsername(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             return FwUserDetails.valueOf(userDto, fwUserBizService.getAuthorities(userDto));
         };
@@ -43,7 +50,7 @@ public class FwBasicConfig {
 
     // @Bean
     // public AuditorAware<Integer> auditorAware() {
-    //     return new ApplicationAuditAware();
+    // return new ApplicationAuditAware();
     // }
 
     @Bean

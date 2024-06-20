@@ -1,3 +1,7 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.security.service;
 
 import cn.hutool.core.io.FileUtil;
@@ -5,23 +9,25 @@ import cn.hutool.core.io.file.FileReader;
 import com.wamogu.biz.auth.pojo.FwUserDto;
 import com.wamogu.kit.FwJsonUtils;
 import com.wamogu.security.constants.FwTokenType;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Service;
 
 /**
  * @Author Armin
+ *
  * @date 24-06-14 15:20
  */
 @Service
 public class FwTokenStorageMapImpl implements FwTokenStorage, InitializingBean, DisposableBean {
+
     private Map<String, FwToken> tokenMap = new ConcurrentHashMap<>();
+
     @Override
     public Optional<FwToken> findByToken(String jwt) {
         return Optional.ofNullable(tokenMap.get(jwt));
@@ -46,7 +52,8 @@ public class FwTokenStorageMapImpl implements FwTokenStorage, InitializingBean, 
 
     @Override
     public void expireTokenHistories(FwUserDto userDto) {
-        tokenMap.values().stream().filter(x -> x.getUid().equals(userDto.getId()))
+        tokenMap.values().stream()
+                .filter(x -> x.getUid().equals(userDto.getId()))
                 .forEach(x -> {
                     x.setRevoked(true);
                     x.setExpired(true);
@@ -78,7 +85,6 @@ public class FwTokenStorageMapImpl implements FwTokenStorage, InitializingBean, 
             return;
         }
         FileReader fileReader = new FileReader(getSessionPath());
-        FwJsonUtils.json2list(fileReader.readString(), FwToken.class)
-                .forEach(x -> tokenMap.put(x.getToken(), x));
+        FwJsonUtils.json2list(fileReader.readString(), FwToken.class).forEach(x -> tokenMap.put(x.getToken(), x));
     }
 }

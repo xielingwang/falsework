@@ -1,23 +1,23 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.rest.base;
 
-import cn.hutool.core.util.ClassUtil;
-import cn.hutool.core.util.StrUtil;
-import com.tangzc.mpe.autotable.annotation.Table;
 import com.wamogu.biz.auth.pojo.FwPrivilegeVo;
 import com.wamogu.security.annotation.FwAnonymousAccess;
 import com.wamogu.security.service.FwSecurityService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Stream;
-
 /**
  * @Author Armin
+ *
  * @date 24-05-22 23:49
  */
 @Tag(name = "系统 Info")
@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 @RequestMapping("/base")
 @RequiredArgsConstructor
 public class InfoController {
+
     private final FwSecurityService fss;
 
     @FwAnonymousAccess

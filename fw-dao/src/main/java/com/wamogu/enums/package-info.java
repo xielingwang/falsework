@@ -1,7 +1,6 @@
 package com.wamogu.enums;
 /**
- * 定义数据库枚举
+ * 定义数据库枚举 @Author Armin
  *
- * @Author Armin
  * @date 24-06-12 11:28
  */

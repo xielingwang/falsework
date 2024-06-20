@@ -1,17 +1,21 @@
+/*
+ * Falsework is a quick development framework
+ * Copyright (C) 2015-2015 挖蘑菇技术部  https://tech.wamogu.com
+ */
 package com.wamogu.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.Getter;
-
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
 /**
  * @Author Armin
+ *
  * @date 24-06-12 11:31
  */
 @Getter
@@ -24,6 +28,7 @@ public enum UserGenderType implements IEnumerator {
     @EnumValue
     @JsonValue
     private final String value;
+
     private final String description;
 
     UserGenderType(String value, String description) {
@@ -31,8 +36,8 @@ public enum UserGenderType implements IEnumerator {
         this.description = description;
     }
 
-    private static final Map<String, UserGenderType> map = Arrays.stream(values())
-            .collect(Collectors.toMap(UserGenderType::getValue, x -> x));
+    private static final Map<String, UserGenderType> map =
+            Arrays.stream(values()).collect(Collectors.toMap(UserGenderType::getValue, x -> x));
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     static UserGenderType resolve(String value) {
